@@ -3,13 +3,14 @@ import jsPDF from 'jspdf'
 
 export async function generatePDF(resume: Resume): Promise<void> {
   const doc = new jsPDF()
+  doc.setFont('helvetica') // Use helvetica as it's the closest to Arial and is built into jsPDF
   const margin = 20
   const pageWidth = doc.internal.pageSize.width
   const pageHeight = doc.internal.pageSize.height
   let y = margin
 
   const setFontStyle = (style: 'normal' | 'bold' | 'italic') => {
-    doc.setFont('times', style)
+    doc.setFont('helvetica', style)
   }
 
   const checkPageBreak = (height: number = 10) => {
@@ -103,7 +104,7 @@ export async function generatePDF(resume: Resume): Promise<void> {
     doc.setFontSize(14)
     setFontStyle('bold')
     doc.text('PROFESSIONAL SUMMARY', margin, y)
-    doc.setLineWidth(0.2)
+    doc.setLineWidth(0.01)
     doc.line(margin, y + 1, pageWidth - margin, y + 1)
     y += 8
     doc.setFontSize(10)
@@ -118,7 +119,7 @@ export async function generatePDF(resume: Resume): Promise<void> {
   doc.setFontSize(14)
   setFontStyle('bold')
   doc.text('EDUCATION', margin, y)
-  doc.setLineWidth(0.2)
+  doc.setLineWidth(0.01)
   doc.line(margin, y + 1, pageWidth - margin, y + 1)
   y += 8
   doc.setFontSize(10)
@@ -147,7 +148,7 @@ export async function generatePDF(resume: Resume): Promise<void> {
   doc.setFontSize(14)
   setFontStyle('bold')
   doc.text('EXPERIENCE', margin, y)
-  doc.setLineWidth(0.2)
+  doc.setLineWidth(0.01)
   doc.line(margin, y + 1, pageWidth - margin, y + 1)
   y += 8
   doc.setFontSize(10)
@@ -189,7 +190,7 @@ export async function generatePDF(resume: Resume): Promise<void> {
   doc.setFontSize(14)
   setFontStyle('bold')
   doc.text('PROJECTS', margin, y)
-  doc.setLineWidth(0.2)
+  doc.setLineWidth(0.01)
   doc.line(margin, y + 1, pageWidth - margin, y + 1)
   y += 8
   doc.setFontSize(10)
@@ -224,7 +225,7 @@ export async function generatePDF(resume: Resume): Promise<void> {
   doc.setFontSize(14)
   setFontStyle('bold')
   doc.text('TECHNICAL SKILLS', margin, y)
-  doc.setLineWidth(0.2)
+  doc.setLineWidth(0.01)
   doc.line(margin, y + 1, pageWidth - margin, y + 1)
   y += 8
   doc.setFontSize(10)

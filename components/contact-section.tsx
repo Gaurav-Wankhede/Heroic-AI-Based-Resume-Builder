@@ -3,6 +3,8 @@
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Resume, Contact } from '@/types/resume'
+import { useResume } from '@/hooks/use-resume'
+import React from 'react'
 
 interface ContactSectionProps {
   resume: Resume;
@@ -10,7 +12,8 @@ interface ContactSectionProps {
 }
 
 export function ContactSection({ resume, updateResume }: ContactSectionProps) {
-  const updateContact = (field: keyof Contact, value: string) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
     const currentContact = resume.contact || {
       mobile: '',
       email: '',
@@ -18,7 +21,7 @@ export function ContactSection({ resume, updateResume }: ContactSectionProps) {
       github: '',
       portfolio: ''
     }
-    updateResume('contact', { ...currentContact, [field]: value })
+    updateResume('contact', { ...currentContact, [name]: value })
   }
 
   const contact = resume.contact || {
@@ -31,58 +34,63 @@ export function ContactSection({ resume, updateResume }: ContactSectionProps) {
 
   return (
     <div className="space-y-4">
-      <div>
+      <div className="grid w-full items-center gap-1.5">
         <Label htmlFor="mobile">Mobile Number</Label>
         <Input
-          id="mobile"
           type="tel"
-          placeholder="+1 (123) 456-7890"
-          value={contact.mobile || ''}
-          onChange={(e) => updateContact('mobile', e.target.value)}
+          id="mobile"
+          name="mobile"
+          value={contact.mobile}
+          onChange={handleInputChange}
+          placeholder="123-456-7890"
         />
       </div>
 
-      <div>
+      <div className="grid w-full items-center gap-1.5">
         <Label htmlFor="email">Email Address</Label>
         <Input
-          id="email"
           type="email"
-          placeholder="your.email@example.com"
-          value={contact.email || ''}
-          onChange={(e) => updateContact('email', e.target.value)}
+          id="email"
+          name="email"
+          value={contact.email}
+          onChange={handleInputChange}
+          placeholder="you@example.com"
         />
       </div>
 
-      <div>
+      <div className="grid w-full items-center gap-1.5">
         <Label htmlFor="linkedin">LinkedIn URL</Label>
         <Input
-          id="linkedin"
           type="url"
-          placeholder="https://linkedin.com/in/yourprofile"
-          value={contact.linkedin || ''}
-          onChange={(e) => updateContact('linkedin', e.target.value)}
+          id="linkedin"
+          name="linkedin"
+          value={contact.linkedin}
+          onChange={handleInputChange}
+          placeholder="https://linkedin.com/in/your-profile"
         />
       </div>
 
-      <div>
+      <div className="grid w-full items-center gap-1.5">
         <Label htmlFor="github">GitHub URL</Label>
         <Input
-          id="github"
           type="url"
-          placeholder="https://github.com/yourusername"
-          value={contact.github || ''}
-          onChange={(e) => updateContact('github', e.target.value)}
+          id="github"
+          name="github"
+          value={contact.github}
+          onChange={handleInputChange}
+          placeholder="https://github.com/your-username"
         />
       </div>
 
-      <div>
+      <div className="grid w-full items-center gap-1.5">
         <Label htmlFor="portfolio">Portfolio URL</Label>
         <Input
-          id="portfolio"
           type="url"
-          placeholder="https://yourportfolio.com"
-          value={contact.portfolio || ''}
-          onChange={(e) => updateContact('portfolio', e.target.value)}
+          id="portfolio"
+          name="portfolio"
+          value={contact.portfolio}
+          onChange={handleInputChange}
+          placeholder="https://your-portfolio.com"
         />
       </div>
     </div>

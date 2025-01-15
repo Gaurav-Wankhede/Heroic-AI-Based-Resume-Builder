@@ -11,6 +11,7 @@ A modern, AI-powered resume builder that helps you create professional resumes w
 - 📄 PDF export
 - 💾 Local storage persistence
 - 🔗 Clickable contact links in PDF
+- 📊 Job description optimization
 
 ## 🛠️ Tech Stack
 
@@ -64,30 +65,43 @@ yarn dev
 
 1. Fill in your personal information in the form sections
 2. Use AI suggestions to enhance your content
-3. Preview your resume in real-time
-4. Download the final resume as a PDF
+3. Paste job descriptions to optimize your resume
+4. Preview your resume in real-time
+5. Download the final resume as a PDF
 
 ## 🎯 Key Features Explained
 
 ### AI Content Generation
 - Smart suggestions for improving resume content
-- Context-aware recommendations
+- Context-aware recommendations based on job descriptions
 - Professional tone enhancement
+- Automatic skill matching with job requirements
+- Section-specific optimization (Summary, Experience, Projects, Skills)
+
+### Job Description Optimization
+- Paste job descriptions to optimize your resume
+- AI analysis of job requirements
+- Automatic content alignment with job needs
+- Smart skill recommendations based on job context
+- Real-time resume optimization suggestions
 
 ### Real-time Preview
 - Live preview of your resume as you type
 - Accurate representation of the final PDF output
 - Responsive design for all screen sizes
+- Section-by-section preview updates
 
 ### PDF Export
-- Professional PDF generation
+- Professional PDF generation with Arial/Helvetica font
 - Clickable links for contact information
-- Consistent formatting and styling
-- Multiple page support
+- Clean section dividers and consistent formatting
+- Proper spacing and layout optimization
+- Multiple page support with smart page breaks
 
 ### Data Persistence
 - Automatic saving to local storage
 - Resume data persistence across sessions
+- Job description storage for reference
 - No account required
 
 ## 🔧 Customization

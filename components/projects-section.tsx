@@ -1,142 +1,108 @@
-'use client'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Resume } from '@/types/resume'
+import { Trash2 } from 'lucide-react'
 
-import { useState } from 'react'
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Trash2, Wand2 } from 'lucide-react'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { useResume } from '@/hooks/use-resume'
-import { useToast } from "@/hooks/use-toast"
+interface ProjectsSectionProps {
+  resume: Resume;
+  updateResume: (field: keyof Resume, value: any) => void;
+}
 
-export function ProjectsSection() {
-  const { resume, updateResume, addProject, removeProject, addProjectDetail, removeProjectDetail, updateNestedField } = useResume()
-  const [generatingAI, setGeneratingAI] = useState<{ [key: string]: boolean }>({})
-  const { toast } = useToast()
+export function ProjectsSection({ resume, updateResume }: ProjectsSectionProps) {
+  const addProject = () => {
+    updateResume('projects', [
+      ...resume.projects,
+      { name: '', technologies: '', date: '', details: [''] }
+    ])
+  }
 
-  const generateAIDetail = async (index: number, detailIndex: number) => {
-    if (!process.env.API_KEY) {
-      toast({
-        title: "API Key Required",
-        description: "Please enter your Google API key to use AI generation.",
-        variant: "destructive",
-      })
-      return
-    }
+  const removeProject = (index: number) => {
+    updateResume('projects', resume.projects.filter((_, i) => i !== index))
+  }
 
-    const key = `project-${index}-${detailIndex}`
-    setGeneratingAI(prev => ({ ...prev, [key]: true }))
+  const updateProject = (index: number, field: string, value: string) => {
+    const newProjects = [...resume.projects]
+    newProjects[index] = { ...newProjects[index], [field]: value }
+    updateResume('projects', newProjects)
+  }
 
-    try {
-      const response = await fetch('/api/generate-ai-content', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          prompt: `Generate a concise, impactful bullet point for a resume project section.
-            Project: ${resume.projects[index].name}
-            Technologies: ${resume.projects[index].technologies}
-            Date: ${resume.projects[index].date}
-            Current detail: ${resume.projects[index].details[detailIndex]}
-            
-            Guidelines:
-            1. Start with a strong action verb
-            2. Highlight specific technologies or methodologies used
-            3. Focus on the project's impact or results
-            4. Keep it concise (preferably under 20 words)
-            
-            Generate only the bullet point text, without any additional explanation.`,
-          apiKey: process.env.API_KEY,
-        }),
-      })
+  const addDetail = (projectIndex: number) => {
+    const newProjects = [...resume.projects]
+    newProjects[projectIndex].details.push('')
+    updateResume('projects', newProjects)
+  }
 
-      if (!response.ok) {
-        throw new Error('Failed to generate AI content')
-      }
+  const removeDetail = (projectIndex: number, detailIndex: number) => {
+    const newProjects = [...resume.projects]
+    newProjects[projectIndex].details = newProjects[projectIndex].details.filter((_, i) => i !== detailIndex)
+    updateResume('projects', newProjects)
+  }
 
-      const data = await response.json()
-      const newDetails = [...resume.projects[index].details];
-      newDetails[detailIndex] = data.content;
-      updateNestedField('projects', index, 'details', newDetails)
-    } catch (error) {
-      console.error('Error generating AI content:', error)
-      toast({
-        title: "Error",
-        description: "Failed to generate AI content. Please try again.",
-        variant: "destructive",
-      })
-    } finally {
-      setGeneratingAI(prev => ({ ...prev, [key]: false }))
-    }
+  const updateDetail = (projectIndex: number, detailIndex: number, value: string) => {
+    const newProjects = [...resume.projects]
+    newProjects[projectIndex].details[detailIndex] = value
+    updateResume('projects', newProjects)
   }
 
   return (
-    <div>
-      <h3 className="text-xl font-semibold mb-4">Projects</h3>
+    <div className="space-y-4">
       {resume.projects.map((project, index) => (
-        <div key={index} className="mb-4 p-4 border rounded">
+        <div key={index} className="space-y-2 p-4 border rounded-lg">
           <Input
             placeholder="Project Name"
             value={project.name}
-            onChange={(e) => updateNestedField('projects', index, 'name', e.target.value)}
-            className="mb-2"
+            onChange={(e) => updateProject(index, 'name', e.target.value)}
           />
           <Input
             placeholder="Technologies"
             value={project.technologies}
-            onChange={(e) => updateNestedField('projects', index, 'technologies', e.target.value)}
-            className="mb-2"
+            onChange={(e) => updateProject(index, 'technologies', e.target.value)}
           />
           <Input
             placeholder="Date"
             value={project.date}
-            onChange={(e) => updateNestedField('projects', index, 'date', e.target.value)}
-            className="mb-2"
+            onChange={(e) => updateProject(index, 'date', e.target.value)}
           />
-          {project.details.map((detail, detailIndex) => (
-            <div key={detailIndex} className="flex items-center space-x-2 mb-2">
-              <Input
-                placeholder="Detail"
-                value={detail}
-                onChange={(e) => {
-                  const newDetails = [...project.details];
-                  newDetails[detailIndex] = e.target.value;
-                  updateNestedField('projects', index, 'details', newDetails);
-                }}
-              />
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button 
-                      variant="outline" 
-                      size="icon" 
-                      onClick={() => generateAIDetail(index, detailIndex)}
-                      disabled={generatingAI[`project-${index}-${detailIndex}`] || !process.env.API_KEY}
-                    >
-                      {generatingAI[`project-${index}-${detailIndex}`] ? (
-                        <span className="animate-spin">⏳</span>
-                      ) : (
-                        <Wand2 className="h-4 w-4" />
-                      )}
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Generate AI content using Gemini 2.0 Flash</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-              <Button variant="destructive" size="icon" onClick={() => removeProjectDetail(index, detailIndex)}>
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </div>
-          ))}
-          <Button onClick={() => addProjectDetail(index)} className="mb-2">Add Detail</Button>
-          <Button variant="destructive" onClick={() => removeProject(index)}>
-            <Trash2 className="mr-2 h-4 w-4" />
-            Remove Project
+          
+          <div className="space-y-2">
+            {project.details.map((detail, detailIndex) => (
+              <div key={detailIndex} className="flex gap-2">
+                <Input
+                  placeholder="Detail"
+                  value={detail}
+                  onChange={(e) => updateDetail(index, detailIndex, e.target.value)}
+                />
+                <Button
+                  variant="destructive"
+                  size="icon"
+                  onClick={() => removeDetail(index, detailIndex)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            ))}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => addDetail(index)}
+              className="w-full"
+            >
+              Add Detail
+            </Button>
+          </div>
+
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={() => removeProject(index)}
+            className="mt-2"
+          >
+            <Trash2 className="h-4 w-4 mr-2" />
+            Remove
           </Button>
         </div>
       ))}
-      <Button onClick={() => addProject({ name: '', technologies: '', date: '', details: [''] })}>
+      <Button onClick={addProject} className="w-full">
         Add Project
       </Button>
     </div>

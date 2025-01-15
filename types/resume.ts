@@ -5,7 +5,7 @@ export interface Education {
     date: string;
   }
   
-  export interface Experience {
+export interface Experience {
     title: string;
     company: string;
     location: string;
@@ -13,21 +13,21 @@ export interface Education {
     details: string[];
   }
   
-  export interface Project {
+export interface Project {
     name: string;
     technologies: string;
     date: string;
     details: string[];
   }
   
-  export interface Skills {
+export interface Skills {
     languages: string;
     frameworks: string;
     developerTools: string;
     libraries: string;
   }
   
-  export interface Contact {
+export interface Contact {
     mobile: string;
     email: string;
     linkedin: string;
@@ -35,7 +35,7 @@ export interface Education {
     portfolio: string;
   }
 
-  export interface Resume {
+export interface Resume {
     name: string;
     contact: Contact;
     summary: string;
