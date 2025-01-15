@@ -89,10 +89,20 @@ ${JSON.stringify(resume.projects, null, 2)}`
         case 'summary':
           prompt = jobContext +
           `Generate a concise professional summary (max 4 lines) for ${resume.name} that aligns with the job requirements:
+          Guidelines:
+1. Focus on value proposition and key achievements that match the job requirements
+2. Ensure the response is exactly 4 lines or fewer
+3. Do NOT use any bullet points, dashes, or symbols
+4. Remove any leading spaces
+
+Current Resume Content
+Experience: ${JSON.stringify(resume.experience, null, 2)}
+Projects: ${JSON.stringify(resume.projects, null, 2)}
 Role: ${resume.experience[0]?.title || 'N/A'}
 Key stats: ${resume.projects.length} projects, ${resume.experience.length} jobs
 Skills: ${Object.values(resume.skills).join(', ')}
-Focus on value proposition and key achievements that match the job description. Ensure the response is exactly 4 lines or fewer.`
+
+Focus on value proposition and key achievements that match the job requirements. Ensure the response is exactly 4 lines or fewer.`
           break
         case 'skills':
           prompt = jobContext +

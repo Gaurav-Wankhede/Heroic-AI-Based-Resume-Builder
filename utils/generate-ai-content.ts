@@ -11,7 +11,7 @@ export async function generateAIContent(prompt: string): Promise<AIResponse> {
   if (!apiKey) {
     return {
       text: '',
-      error: 'NEXT_PUBLIC_GOOGLE_AI_KEY not found in environment variables'
+      error: 'GOOGLE_AI_KEY not found in environment variables'
     };
   }
 
