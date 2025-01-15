@@ -15,7 +15,7 @@ A modern, AI-powered resume builder that helps you create professional resumes w
 
 ## 🛠️ Tech Stack
 
-- **Framework:** Next.js 14
+- **Framework:** Next.js 15
 - **Language:** TypeScript
 - **Styling:** Tailwind CSS
 - **UI Components:** shadcn/ui
