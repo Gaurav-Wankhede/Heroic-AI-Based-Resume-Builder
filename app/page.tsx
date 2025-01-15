@@ -1,6 +1,5 @@
 'use client'
 
-import { ResumeBuilder } from '@/components/resume-builder'
 import { JobDescriptionOptimizer } from '@/components/job-description-optimizer'
 import { JobDescriptionProvider } from '@/contexts/job-description-context'
 import { ResumeProvider } from '@/contexts/resume-context'
@@ -15,7 +14,6 @@ import { SectionHeader } from '@/components/section-header'
 import { SummarySection } from '@/components/summary-section'
 import { Card } from '@/components/ui/card'
 import { useResumeContext } from '@/contexts/resume-context'
-import { Resume } from '@/types/resume'
 
 function PageContent() {
   const { resume, updateResume } = useResumeContext()

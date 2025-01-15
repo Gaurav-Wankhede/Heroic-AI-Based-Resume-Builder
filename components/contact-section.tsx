@@ -2,13 +2,12 @@
 
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Resume, Contact } from '@/types/resume'
-import { useResume } from '@/hooks/use-resume'
+import { Resume, Contact, Education, Experience, Project, Skills } from '@/types/resume'
 import React from 'react'
 
 interface ContactSectionProps {
   resume: Resume;
-  updateResume: (field: keyof Resume, value: any) => void;
+  updateResume: (field: keyof Resume, value: Contact | string | Education[] | Experience[] | Project[] | Skills) => void
 }
 
 export function ContactSection({ resume, updateResume }: ContactSectionProps) {

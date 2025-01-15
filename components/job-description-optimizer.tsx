@@ -9,12 +9,12 @@ import { Wand2 } from 'lucide-react'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { useToast } from "@/hooks/use-toast"
 import { generateAIContent } from '@/utils/generate-ai-content'
-import { Resume } from '@/types/resume'
+import { Resume, Contact, Education, Experience, Project, Skills } from '@/types/resume'
 import { useJobDescription } from '@/contexts/job-description-context'
 
 interface JobDescriptionOptimizerProps {
   resume: Resume;
-  updateResume: (field: keyof Resume, value: any) => void;
+  updateResume: (field: keyof Resume, value: Contact | string | Education[] | Experience[] | Project[] | Skills) => void
 }
 
 export function JobDescriptionOptimizer({ resume, updateResume }: JobDescriptionOptimizerProps) {

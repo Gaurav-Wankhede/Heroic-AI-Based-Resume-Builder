@@ -11,6 +11,7 @@ import { ResumePreview } from './resume-preview'
 import { SkillsSection } from './skills-section'
 import { SummarySection } from './summary-section'
 import { useState } from 'react'
+import Link from 'next/link'
 
 export function ResumeBuilder() {
   const { resume, updateResume } = useResume()
@@ -32,11 +33,11 @@ export function ResumeBuilder() {
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-14 items-center">
           <div className="mr-4 hidden md:flex">
-            <a className="mr-6 flex items-center space-x-2" href="/">
+            <Link className="mr-6 flex items-center space-x-2" href="/">
               <span className="hidden font-bold sm:inline-block">
                 Heroic AI Based Resume Builder
               </span>
-            </a>
+            </Link>
           </div>
         </div>
       </header>

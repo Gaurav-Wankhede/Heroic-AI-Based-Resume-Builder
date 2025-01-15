@@ -129,7 +129,7 @@ export function ExperienceSection({ resume, updateResume }: ExperienceSectionPro
           description: 'Generated job details!',
         })
       }
-    } catch (error) {
+    } catch (_error) {
       toast({
         title: 'Error',
         description: 'Failed to generate job details',

@@ -186,7 +186,7 @@ Libraries: lib1, lib2`
           description: `${title} has been optimized based on the job description`,
         })
       }
-    } catch (error) {
+    } catch (_error) {
       toast({
         title: "Error",
         description: `Failed to optimize ${title}. Please try again.`,

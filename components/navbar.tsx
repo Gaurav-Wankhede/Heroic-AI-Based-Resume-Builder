@@ -20,7 +20,7 @@ export function Navbar() {
         title: "Success",
         description: "Resume PDF has been downloaded",
       })
-    } catch (error) {
+    } catch (_error) {
       toast({
         title: "Error",
         description: "Failed to generate PDF. Please try again.",

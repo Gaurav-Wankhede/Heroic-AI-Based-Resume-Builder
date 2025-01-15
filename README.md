@@ -12,6 +12,9 @@ A modern, AI-powered resume builder that helps you create professional resumes w
 - 💾 Local storage persistence
 - 🔗 Clickable contact links in PDF
 - 📊 Job description optimization
+- **Rate Limited API**: Protected against spam with intelligent rate limiting
+  - Generate AI Content: 5 requests per 5 minutes
+  - Resume Optimization: 5 requests per 5 minutes
 
 ## 🛠️ Tech Stack
 
@@ -22,7 +25,8 @@ A modern, AI-powered resume builder that helps you create professional resumes w
 - **PDF Generation:** jsPDF
 - **State Management:** React Context
 - **AI Integration:** Google Generative AI
-- **Icons:** Lucide React
+- **Rate Limiting:** In-memory with Map
+- **Authentication:** NextAuth.js
 
 ## 🚀 Getting Started
 
@@ -36,7 +40,7 @@ A modern, AI-powered resume builder that helps you create professional resumes w
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/your-username/heroic-resume-builder.git
+git clone https://github.com/Gaurav-Wankhede/Heroic-AI-Based-Resume-Builder.git
 cd heroic-resume-builder
 ```
 
@@ -49,7 +53,7 @@ yarn install
 
 3. Create a `.env.local` file in the root directory and add your Google AI API key:
 ```env
-GOOGLE_AI_API_KEY=your_api_key_here
+GOOGLE_AI_API_KEY=your_google_ai_api_key
 ```
 
 4. Start the development server:
@@ -126,7 +130,21 @@ heroic-resume-builder/
 └── utils/                # Utility functions
 ```
 
-## 🤝 Contributing
+## API Rate Limits
+
+To ensure fair usage and prevent spam, the following rate limits are enforced using an in-memory rate limiter:
+
+- `/api/generate-ai-content`: 5 requests per 5 minutes per IP
+- `/api/optimize-resume`: 5 requests per 5 minutes per IP
+
+Rate limit headers are included in API responses:
+- `X-RateLimit-Limit`: Maximum requests allowed
+- `X-RateLimit-Remaining`: Remaining requests
+- `X-RateLimit-Reset`: Time when limit resets
+
+Note: The rate limiter uses an in-memory store which resets on server restart. For production deployments with multiple instances, consider using a distributed rate limiter.
+
+## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
