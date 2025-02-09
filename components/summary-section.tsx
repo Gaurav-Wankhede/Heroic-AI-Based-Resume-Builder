@@ -3,6 +3,7 @@
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from "@/components/ui/label"
 import { Resume } from '@/types/resume'
+import { SectionHeader } from './section-header'
 
 interface SummarySectionProps {
   resume: Resume;
@@ -11,15 +12,15 @@ interface SummarySectionProps {
 
 export function SummarySection({ resume, updateResume }: SummarySectionProps) {
   return (
-    <div className="space-y-2">
-      <Label htmlFor="summary">Professional Summary</Label>
-      <Textarea
-        id="summary"
-        placeholder="Write a brief summary of your professional background and key qualifications..."
-        value={resume.summary || ''}
-        onChange={(e) => updateResume('summary', e.target.value)}
-        className="min-h-[100px] resize-none"
-      />
-    </div>
+    
+      <div className="space-y-2">
+        <Textarea
+          id="summary"
+          placeholder="A results-driven software engineer with expertise in building scalable applications..."
+          value={resume.summary || ''}
+          onChange={(e) => updateResume('summary', e.target.value)}
+          className="min-h-[150px] resize-none"
+        />
+      </div>
   )
 }

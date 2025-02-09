@@ -8,16 +8,6 @@ interface RateLimitInfo {
 // In-memory store for rate limiting
 const rateLimit = new Map<string, RateLimitInfo>();
 
-// Cleanup old entries every 5 minutes
-setInterval(() => {
-  const now = Date.now();
-  for (const [key, value] of rateLimit.entries()) {
-    if (now >= value.resetTime) {
-      rateLimit.delete(key);
-    }
-  }
-}, 5 * 60 * 1000);
-
 interface RateLimitConfig {
   limit: number      // Number of requests allowed
   window: number     // Time window in seconds
@@ -31,6 +21,13 @@ export async function rateLimiter(
     const ip = req.headers.get('x-forwarded-for') || 'anonymous'
     const key = `rate-limit:${ip}`
     const now = Date.now()
+
+    // Clean up expired entries
+    for (const [key, value] of rateLimit.entries()) {
+      if (now >= value.resetTime) {
+        rateLimit.delete(key)
+      }
+    }
 
     // Get current rate limit info or create new
     let rateLimitInfo = rateLimit.get(key)

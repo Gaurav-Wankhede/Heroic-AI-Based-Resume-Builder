@@ -1,7 +1,10 @@
+'use client';
+
+import { Project, Resume } from '@/types/resume'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Resume } from '@/types/resume'
-import { Trash2 } from 'lucide-react'
+import { Textarea } from '@/components/ui/textarea'
+import { Plus, Trash2 } from 'lucide-react'
 
 interface ProjectsSectionProps {
   resume: Resume;
@@ -9,102 +12,140 @@ interface ProjectsSectionProps {
 }
 
 export function ProjectsSection({ resume, updateResume }: ProjectsSectionProps) {
+  const projects = resume.projects || [];
+
   const addProject = () => {
-    updateResume('projects', [
-      ...resume.projects,
-      { name: '', technologies: '', date: '', details: [''] }
-    ])
+    const newProject: Project = {
+      name: '',
+      technologies: '',
+      date: '',
+      details: [''],
+      deployedLink: '',
+      githubLink: '',
+      presentationLink: ''
+    };
+    updateResume('projects', [...projects, newProject]);
+  }
+
+  const updateProject = (index: number, key: keyof Project, value: string | string[]) => {
+    const updatedProjects = projects.map((project, i) => {
+      if (i === index) {
+        return { 
+          ...project, 
+          [key]: value 
+        };
+      }
+      return project;
+    });
+    updateResume('projects', updatedProjects);
   }
 
   const removeProject = (index: number) => {
-    updateResume('projects', resume.projects.filter((_, i) => i !== index))
+    const updatedProjects = projects.filter((_, i) => i !== index);
+    updateResume('projects', updatedProjects);
   }
 
-  const updateProject = (index: number, field: string, value: string) => {
-    const newProjects = [...resume.projects]
-    newProjects[index] = { ...newProjects[index], [field]: value }
-    updateResume('projects', newProjects)
-  }
-
-  const addDetail = (projectIndex: number) => {
-    const newProjects = [...resume.projects]
-    newProjects[projectIndex].details.push('')
-    updateResume('projects', newProjects)
-  }
-
-  const removeDetail = (projectIndex: number, detailIndex: number) => {
-    const newProjects = [...resume.projects]
-    newProjects[projectIndex].details = newProjects[projectIndex].details.filter((_, i) => i !== detailIndex)
-    updateResume('projects', newProjects)
-  }
-
-  const updateDetail = (projectIndex: number, detailIndex: number, value: string) => {
-    const newProjects = [...resume.projects]
-    newProjects[projectIndex].details[detailIndex] = value
-    updateResume('projects', newProjects)
-  }
+  const removeProjectDetail = (projectIndex: number, detailIndex: number) => {
+    const updatedProjects = projects.map((project, i) => {
+      if (i === projectIndex) {
+        const newDetails = project.details.filter((_, j) => j !== detailIndex);
+        return { ...project, details: newDetails };
+      }
+      return project;
+    });
+    updateResume('projects', updatedProjects);
+  };
 
   return (
     <div className="space-y-4">
-      {resume.projects.map((project, index) => (
+      {projects.map((project, index) => (
         <div key={index} className="space-y-2 p-4 border rounded-lg">
-          <Input
-            placeholder="Project Name"
-            value={project.name}
-            onChange={(e) => updateProject(index, 'name', e.target.value)}
-          />
-          <Input
-            placeholder="Technologies"
-            value={project.technologies}
-            onChange={(e) => updateProject(index, 'technologies', e.target.value)}
-          />
-          <Input
-            placeholder="Date"
-            value={project.date}
-            onChange={(e) => updateProject(index, 'date', e.target.value)}
-          />
-          
-          <div className="space-y-2">
-            {project.details.map((detail, detailIndex) => (
-              <div key={detailIndex} className="flex gap-2">
+          <div className="flex items-start justify-between">
+            <div className="flex-1 space-y-4">
+              <Input
+                placeholder="Project name"
+                value={project.name || ''}
+                onChange={(e) => updateProject(index, 'name', e.target.value)}
+              />
+              <Input
+                placeholder="Technologies used"
+                value={project.technologies || ''}
+                onChange={(e) => updateProject(index, 'technologies', e.target.value)}
+              />
+              <Input
+                placeholder="Date (e.g., 2023 or Jan 2023)"
+                value={project.date || ''}
+                onChange={(e) => updateProject(index, 'date', e.target.value)}
+              />
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <Input
-                  placeholder="Detail"
-                  value={detail}
-                  onChange={(e) => updateDetail(index, detailIndex, e.target.value)}
+                  placeholder="Deployed URL"
+                  value={project.deployedLink || ''}
+                  onChange={(e) => updateProject(index, 'deployedLink', e.target.value)}
                 />
+                <Input
+                  placeholder="GitHub Repository URL"
+                  value={project.githubLink || ''}
+                  onChange={(e) => updateProject(index, 'githubLink', e.target.value)}
+                />
+                <Input
+                  placeholder="Presentation/Demo URL"
+                  value={project.presentationLink || ''}
+                  onChange={(e) => updateProject(index, 'presentationLink', e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                {project.details.map((detail, detailIndex) => (
+                  <div key={detailIndex} className="flex gap-2">
+                    <Textarea
+                      placeholder="Project detail"
+                      value={detail || ''}
+                      onChange={(e) => {
+                        const newDetails = [...project.details];
+                        newDetails[detailIndex] = e.target.value;
+                        updateProject(index, 'details', newDetails);
+                      }}
+                      className="flex-1"
+                    />
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => removeProjectDetail(index, detailIndex)}
+                      className="h-8 w-8 text-destructive hover:text-destructive/90"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
                 <Button
-                  variant="destructive"
-                  size="icon"
-                  onClick={() => removeDetail(index, detailIndex)}
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const newDetails = [...project.details, ''];
+                    updateProject(index, 'details', newDetails);
+                  }}
                 >
-                  <Trash2 className="h-4 w-4" />
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Detail
                 </Button>
               </div>
-            ))}
+            </div>
             <Button
-              variant="outline"
-              size="sm"
-              onClick={() => addDetail(index)}
-              className="w-full"
+              variant="ghost"
+              size="icon"
+              onClick={() => removeProject(index)}
+              className="ml-2 text-destructive hover:text-destructive/90"
             >
-              Add Detail
+              <Trash2 className="h-4 w-4" />
             </Button>
           </div>
-
-          <Button
-            variant="destructive"
-            size="sm"
-            onClick={() => removeProject(index)}
-            className="mt-2"
-          >
-            <Trash2 className="h-4 w-4 mr-2" />
-            Remove
-          </Button>
         </div>
       ))}
+      
       <Button onClick={addProject} className="w-full">
+        <Plus className="mr-2 h-4 w-4" />
         Add Project
       </Button>
     </div>
-  )
+  );
 }

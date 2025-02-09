@@ -11,25 +11,24 @@ interface EducationSectionProps {
 export function EducationSection({ resume, updateResume }: EducationSectionProps) {
   const addEducation = () => {
     updateResume('education', [
-      ...resume.education,
+      ...(resume.education || []),
       { school: '', degree: '', location: '', date: '' }
     ])
   }
 
   const removeEducation = (index: number) => {
-    updateResume('education', resume.education.filter((_, i) => i !== index))
+    updateResume('education', resume.education?.filter((_, i) => i !== index) || [])
   }
 
   const updateEducation = (index: number, field: string, value: string) => {
-    const newEducation = [...resume.education]
+    const newEducation = [...(resume.education || [])]
     newEducation[index] = { ...newEducation[index], [field]: value }
     updateResume('education', newEducation)
   }
 
   return (
     <div className="space-y-4">
-      <h3 className="text-xl font-semibold mb-4">Education</h3>
-      {resume.education.map((edu, index) => (
+      {resume.education?.map((edu, index) => (
         <div key={index} className="space-y-2 p-4 border rounded-lg">
           <Input
             placeholder="School"

@@ -14,12 +14,17 @@ export async function generatePDF(resume: Resume): Promise<void> {
   }
 
   const checkPageBreak = (height: number = 10) => {
-    if (y + height > pageHeight - margin) {
+    if (y + height > pageHeight - (margin * 1.5)) {
       doc.addPage()
       y = margin
       return true
     }
     return false
+  }
+
+  // Add text wrapping helper
+  const wrapText = (text: string, maxWidth: number) => {
+    return doc.splitTextToSize(text, maxWidth - (margin * 2))
   }
 
   // Add name (centered)

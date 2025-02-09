@@ -65,7 +65,7 @@ export function useResume() {
   }, []);
 
   const addExperience = useCallback((item: Experience) => {
-    setResume(prev => ({ ...prev, experience: [...prev.experience, item] }));
+    setResume(prev => ({ ...prev, experience: [...prev.experience, { ...item, details: [] }] }));
   }, []);
 
   const removeExperience = useCallback((index: number) => {
@@ -98,7 +98,7 @@ export function useResume() {
   }, []);
 
   const addProject = useCallback((item: Project) => {
-    setResume(prev => ({ ...prev, projects: [...prev.projects, item] }));
+    setResume(prev => ({ ...prev, projects: [...prev.projects, { ...item, details: [] }] }));
   }, []);
 
   const removeProject = useCallback((index: number) => {

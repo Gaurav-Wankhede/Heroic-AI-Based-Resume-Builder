@@ -14,6 +14,7 @@ import { SectionHeader } from '@/components/section-header'
 import { SummarySection } from '@/components/summary-section'
 import { Card } from '@/components/ui/card'
 import { useResumeContext } from '@/contexts/resume-context'
+import { ResumeTypeSelector } from '@/components/resume-type-selector'
 
 function PageContent() {
   const { resume, updateResume } = useResumeContext()
@@ -27,8 +28,12 @@ function PageContent() {
         <div className="container max-w-[1800px] grid lg:grid-cols-[1fr,minmax(0,800px)] gap-6 px-4 py-6">
           {/* Left Column - Job Description and Resume Builder */}
           <div className="h-[calc(100vh-100px)] overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] lg:block flex flex-col space-y-6">
-            {/* Job Description Card */}
             <Card className="p-4 md:p-6">
+            <ResumeTypeSelector 
+              onSelect={(type) => updateResume('resumeType', type)} 
+              className="mb-6"
+              defaultValue={resume?.resumeType}
+            />
               <JobDescriptionOptimizer resume={resume} updateResume={updateResume} />
             </Card>
 

@@ -22,7 +22,7 @@ const initialResume: Resume = {
   ],
   experience: [
     {
-      title: 'Software Engineer',
+      title: 'Data Scientist',
       company: 'Example Corp',
       location: 'City, State',
       date: '2023 - Present',

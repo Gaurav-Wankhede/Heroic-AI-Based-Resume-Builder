@@ -1,147 +1,114 @@
-import { Resume } from "@/types/resume"
+'use client'
+
+import { useState, useEffect } from 'react'
+import { Resume } from '@/types/resume'
+import { TemplateSelector } from './template-selector'
+import { TemplateType } from './templates'
+import { ExecutiveTemplate } from './templates/ExecutiveTemplate'
+import { ModernTemplate } from './templates/ModernTemplate'
+import { MinimalistTemplate } from './templates/MinimalistTemplate'
+import { CreativeTemplate } from './templates/CreativeTemplate'
+import { ProfessionalTemplate } from './templates/ProfessionalTemplate'
+import { OxfordStandardTemplate } from './templates/OxfordStandardTemplate'
+import { CantabrigianTemplate } from './templates/CantabrigianTemplate'
+import { TechInnovatorTemplate } from './templates/TechInnovatorTemplate'
+import { AcademicScholarTemplate } from './templates/AcademicScholarTemplate'
+import { ProjectPortfolioTemplate } from './templates/ProjectPortfolioTemplate'
+import { Button } from "./ui/button"
+import { Download } from "lucide-react"
+import { ErrorBoundary, FallbackProps } from 'react-error-boundary'
 
 interface ResumePreviewProps {
   resume: Resume
+  onDownload?: () => void
+  isGeneratingPDF?: boolean
 }
 
-export function ResumePreview({ resume }: ResumePreviewProps) {
+function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
   return (
-    <div className="font-['Arial'] text-sm">
-      {/* Contact Information */}
-      <div className="text-center mb-4">
-        <h1 className="text-2xl font-bold mb-2">{resume.name}</h1>
-        <div className="flex justify-center gap-4 text-gray-600">
-          {resume.contact.email && (
-            <a href={`mailto:${resume.contact.email}`} className="hover:text-primary">
-              {resume.contact.email}
-            </a>
-          )}
-          {resume.contact.mobile && <span>|</span>}
-          {resume.contact.mobile && <span>{resume.contact.mobile}</span>}
-          {resume.contact.linkedin && <span>|</span>}
-          {resume.contact.linkedin && (
-            <a href={resume.contact.linkedin} target="_blank" rel="noopener noreferrer" className="hover:text-primary">
-              LinkedIn
-            </a>
-          )}
-          {resume.contact.github && <span>|</span>}
-          {resume.contact.github && (
-            <a href={resume.contact.github} target="_blank" rel="noopener noreferrer" className="hover:text-primary">
-              GitHub
-            </a>
-          )}
-          {resume.contact.portfolio && <span>|</span>}
-          {resume.contact.portfolio && (
-            <a href={resume.contact.portfolio} target="_blank" rel="noopener noreferrer" className="hover:text-primary">
-              Portfolio
-            </a>
+    <div className="p-4 bg-red-50 text-red-900 rounded-lg">
+      <h2 className="text-lg font-semibold">Something went wrong:</h2>
+      <pre className="text-sm">{error.message}</pre>
+      <button
+        onClick={resetErrorBoundary}
+        className="mt-4 px-4 py-2 bg-red-100 hover:bg-red-200 rounded"
+      >
+        Try again
+      </button>
+    </div>
+  )
+}
+
+const TemplateComponents = {
+  'executive': ExecutiveTemplate,
+  'modern': ModernTemplate,
+  'minimalist': MinimalistTemplate,
+  'creative': CreativeTemplate,
+  'professional': ProfessionalTemplate,
+  'oxford-standard': OxfordStandardTemplate,
+  'cantabrigian': CantabrigianTemplate,
+  'tech-innovator': TechInnovatorTemplate,
+  'academic-scholar': AcademicScholarTemplate,
+  'project-portfolio': ProjectPortfolioTemplate,
+} as const
+
+export function ResumePreview({ 
+  resume, 
+  onDownload,
+  isGeneratingPDF = false 
+}: ResumePreviewProps) {
+  const [templateType, setTemplateType] = useState<TemplateType>('professional')
+
+  const handleTemplateChange = (newTemplate: TemplateType) => {
+    setTemplateType(newTemplate)
+  }
+
+  const CurrentTemplate = TemplateComponents[templateType]
+
+  return (
+    <ErrorBoundary
+      FallbackComponent={ErrorFallback}
+      onReset={() => {
+        setTemplateType('professional')
+      }}
+    >
+      <div className="space-y-6">
+        {/* Controls */}
+        <div className="flex flex-col space-y-4 bg-white p-4 rounded-lg shadow-sm">
+          <div className="flex justify-between items-center">
+            <h2 className="text-lg font-semibold text-gray-900">Resume Preview</h2>
+            {onDownload && (
+              <Button
+                onClick={onDownload}
+                disabled={isGeneratingPDF}
+              >
+                <Download className="mr-2 h-4 w-4" />
+                {isGeneratingPDF ? 'Generating PDF...' : 'Download PDF'}
+              </Button>
+            )}
+          </div>
+          
+          <div>
+            <label className="text-sm font-medium text-gray-700 mb-2 block">
+              Select Template Style
+            </label>
+            <TemplateSelector
+              onSelect={handleTemplateChange}
+              defaultValue={templateType}
+              className="w-full"
+            />
+          </div>
+        </div>
+
+        {/* Template Preview */}
+        <div className="bg-white shadow-lg rounded-lg overflow-hidden">
+          {resume && CurrentTemplate && (
+            <div key={templateType} className="animate-fadeIn">
+              <CurrentTemplate resume={resume} className="w-full" />
+            </div>
           )}
         </div>
       </div>
-
-      {/* Summary */}
-      {resume.summary && (
-        <div className="mb-6">
-          <h2 className="text-lg font-bold border-b pb-1 mb-2">Professional Summary</h2>
-          <p className="whitespace-pre-wrap">{resume.summary}</p>
-        </div>
-      )}
-
-      {/* Education */}
-      {resume.education.length > 0 && (
-        <div className="mb-6">
-          <h2 className="text-lg font-bold border-b pb-1 mb-2">Education</h2>
-          {resume.education.map((edu, index) => (
-            <div key={index} className="mb-4">
-              <div className="flex justify-between items-start mb-1">
-                <div>
-                  <h3 className="font-bold">{edu.school}</h3>
-                  <div className="text-gray-600">{edu.degree}</div>
-                </div>
-                <div className="text-gray-600 text-right">
-                  {edu.date}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Experience */}
-      {resume.experience.length > 0 && (
-        <div className="mb-6">
-          <h2 className="text-lg font-bold border-b pb-1 mb-2">Experience</h2>
-          {resume.experience.map((exp, index) => (
-            <div key={index} className="mb-4">
-              <div className="flex justify-between items-start mb-1">
-                <div>
-                  <h3 className="font-bold">{exp.title}</h3>
-                  <div className="text-gray-600">{exp.company}</div>
-                </div>
-                <div className="text-gray-600 text-right">
-                  {exp.date}
-                </div>
-              </div>
-              <ul className="list-disc list-inside mt-1">
-                {exp.details.map((detail, detailIndex) => (
-                  <li key={detailIndex} className="text-sm text-gray-700 ml-4">
-                    {detail}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Projects */}
-      {resume.projects.length > 0 && (
-        <div className="mb-6">
-          <h2 className="text-lg font-bold border-b pb-1 mb-2">Projects</h2>
-          {resume.projects.map((project, index) => (
-            <div key={index} className="mb-4">
-              <h3 className="font-bold mb-1">{project.name}</h3>
-              <div className="text-gray-600">{project.technologies}</div>
-              <ul className="list-disc list-inside mt-1">
-                {project.details.map((detail, detailIndex) => (
-                  <li key={detailIndex} className="text-sm text-gray-700 ml-4">
-                    {detail}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Skills */}
-      {resume.skills && (
-        <div>
-          <h2 className="text-lg font-bold border-b pb-1 mb-2">Technical Skills</h2>
-          <div className="space-y-2 text-sm">
-            {resume.skills.languages && (
-              <div>
-                <span className="font-medium">Languages:</span> {resume.skills.languages}
-              </div>
-            )}
-            {resume.skills.frameworks && (
-              <div>
-                <span className="font-medium">Frameworks:</span> {resume.skills.frameworks}
-              </div>
-            )}
-            {resume.skills.developerTools && (
-              <div>
-                <span className="font-medium">Developer Tools:</span> {resume.skills.developerTools}
-              </div>
-            )}
-            {resume.skills.libraries && (
-              <div>
-                <span className="font-medium">Libraries:</span> {resume.skills.libraries}
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-    </div>
+    </ErrorBoundary>
   )
 }

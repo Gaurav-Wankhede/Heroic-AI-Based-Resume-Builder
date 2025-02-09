@@ -10,7 +10,7 @@ interface ContactSectionProps {
   updateResume: (field: keyof Resume, value: Contact | string | Education[] | Experience[] | Project[] | Skills) => void
 }
 
-export function ContactSection({ resume, updateResume }: ContactSectionProps) {
+export function ContactSection({ resume, updateResume}: ContactSectionProps) {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     const currentContact = resume.contact || {

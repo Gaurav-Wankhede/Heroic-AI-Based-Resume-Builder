@@ -1,7 +1,7 @@
 'use client'
 
 import React, { createContext, useContext, ReactNode, useState } from 'react'
-import { Resume, Education, Experience, Project } from '@/types/resume'
+import { Resume, Education, Experience, Project, Skills, AIContent } from '@/types/resume'
 
 const initialResume: Resume = {
   name: 'Gaurav Wankhede',
@@ -12,42 +12,14 @@ const initialResume: Resume = {
     github: 'https://github.com/Gaurav-Wankhede',
     portfolio: 'https://gaurav-wankhede.vercel.app/'
   },
-  education: [
-    {
-      school: 'Example University',
-      degree: 'Bachelor of Science in Computer Science',
-      location: 'City, State',
-      date: '2020 - 2024'
-    }
-  ],
-  experience: [
-    {
-      title: 'Software Engineer',
-      company: 'Example Corp',
-      location: 'City, State',
-      date: '2023 - Present',
-      details: [
-        'Developed and maintained web applications using React and Node.js',
-        'Collaborated with cross-functional teams to deliver high-quality software'
-      ]
-    }
-  ],
-  projects: [
-    {
-      name: 'Project Name',
-      technologies: 'React, Node.js, MongoDB',
-      date: '2023',
-      details: [
-        'Built a full-stack web application',
-        'Implemented user authentication and authorization'
-      ]
-    }
-  ],
+  education: [],
+  experience: [],
+  projects: [],
   skills: {
-    languages: 'Java, Python, C/C++, SQL (Postgres), JavaScript, HTML/CSS',
-    frameworks: 'NextJS, Streamlit, WordPress, Material-UI, FastAPI',
-    developerTools: 'Git, Docker, Google Cloud Platform, Vercel Cloud, VS Code, Visual Studio, PyCharm',
-    libraries: 'Pandas, NumPy, Matplotlib, Scikit-learn, TensorFlow, Keras, PyTorch'
+    languages: '',
+    frameworks: '',
+    developerTools: '',
+    libraries: ''
   },
   summary: 'Experienced software engineer with a strong foundation in building scalable web applications...'
 }
@@ -63,13 +35,13 @@ interface ResumeContextType {
            T extends 'projects' ? keyof Project : never,
     value: any
   ) => void
-  addEducation: (item: Resume['education'][0]) => void
+  addEducation: (item: Education) => void
   removeEducation: (index: number) => void
-  addExperience: (item: Resume['experience'][0]) => void
+  addExperience: (item: Experience) => void
   removeExperience: (index: number) => void
   addExperienceDetail: (index: number) => void
   removeExperienceDetail: (expIndex: number, detailIndex: number) => void
-  addProject: (item: Resume['projects'][0]) => void
+  addProject: (item: Project) => void
   removeProject: (index: number) => void
   addProjectDetail: (index: number) => void
   removeProjectDetail: (projIndex: number, detailIndex: number) => void
@@ -100,39 +72,39 @@ export function ResumeProvider({ children }: { children: ReactNode }) {
     }))
   }
 
-  const addEducation = (item: Resume['education'][0]) => {
+  const addEducation = (item: Education) => {
     setResume(prev => ({
       ...prev,
-      education: [...prev.education, item],
+      education: [...(prev.education || []), item],
     }))
   }
 
   const removeEducation = (index: number) => {
     setResume(prev => ({
       ...prev,
-      education: prev.education.filter((_, i) => i !== index),
+      education: (prev.education || []).filter((_, i) => i !== index),
     }))
   }
 
-  const addExperience = (item: Resume['experience'][0]) => {
+  const addExperience = (item: Experience) => {
     setResume(prev => ({
       ...prev,
-      experience: [...prev.experience, item],
+      experience: [...(prev.experience || []), item],
     }))
   }
 
   const removeExperience = (index: number) => {
     setResume(prev => ({
       ...prev,
-      experience: prev.experience.filter((_, i) => i !== index),
+      experience: (prev.experience || []).filter((_, i) => i !== index),
     }))
   }
 
   const addExperienceDetail = (index: number) => {
     setResume(prev => ({
       ...prev,
-      experience: prev.experience.map((exp, i) =>
-        i === index ? { ...exp, details: [...exp.details, ''] } : exp
+      experience: (prev.experience || []).map((exp, i) =>
+        i === index ? { ...exp, details: [...(exp.details || []), ''] } : exp
       ),
     }))
   }
@@ -140,33 +112,33 @@ export function ResumeProvider({ children }: { children: ReactNode }) {
   const removeExperienceDetail = (expIndex: number, detailIndex: number) => {
     setResume(prev => ({
       ...prev,
-      experience: prev.experience.map((exp, i) =>
+      experience: (prev.experience || []).map((exp, i) =>
         i === expIndex
-          ? { ...exp, details: exp.details.filter((_, j) => j !== detailIndex) }
+          ? { ...exp, details: (exp.details || []).filter((_, j) => j !== detailIndex) }
           : exp
       ),
     }))
   }
 
-  const addProject = (item: Resume['projects'][0]) => {
+  const addProject = (item: Project) => {
     setResume(prev => ({
       ...prev,
-      projects: [...prev.projects, item],
+      projects: [...(prev.projects || []), item],
     }))
   }
 
   const removeProject = (index: number) => {
     setResume(prev => ({
       ...prev,
-      projects: prev.projects.filter((_, i) => i !== index),
+      projects: (prev.projects || []).filter((_, i) => i !== index),
     }))
   }
 
   const addProjectDetail = (index: number) => {
     setResume(prev => ({
       ...prev,
-      projects: prev.projects.map((proj, i) =>
-        i === index ? { ...proj, details: [...proj.details, ''] } : proj
+      projects: (prev.projects || []).map((proj, i) =>
+        i === index ? { ...proj, details: [...(proj.details || []), ''] } : proj
       ),
     }))
   }
@@ -174,9 +146,9 @@ export function ResumeProvider({ children }: { children: ReactNode }) {
   const removeProjectDetail = (projIndex: number, detailIndex: number) => {
     setResume(prev => ({
       ...prev,
-      projects: prev.projects.map((proj, i) =>
+      projects: (prev.projects || []).map((proj, i) =>
         i === projIndex
-          ? { ...proj, details: proj.details.filter((_, j) => j !== detailIndex) }
+          ? { ...proj, details: (proj.details || []).filter((_, j) => j !== detailIndex) }
           : proj
       ),
     }))

@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Resume } from '@/types/resume'
-import { Wand2, Plus, Trash } from 'lucide-react'
+import { Wand2, Plus, Trash, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { generateAIContent } from '@/utils/generate-ai-content'
 import { useToast } from '@/hooks/use-toast'
@@ -15,6 +15,9 @@ export function ExperienceSection({ resume, updateResume }: ExperienceSectionPro
   const [isGenerating, setIsGenerating] = useState<number | null>(null)
   const { toast } = useToast()
 
+  // Initialize experience array if undefined
+  const experiences = resume.experience || []
+
   const addExperience = () => {
     const newExperience = {
       title: '',
@@ -23,16 +26,16 @@ export function ExperienceSection({ resume, updateResume }: ExperienceSectionPro
       date: '',
       details: ['']
     }
-    updateResume('experience', [...resume.experience, newExperience])
+    updateResume('experience', [...experiences, newExperience])
   }
 
   const removeExperience = (index: number) => {
-    const updatedExperience = resume.experience.filter((_, i) => i !== index)
+    const updatedExperience = experiences.filter((_, i) => i !== index)
     updateResume('experience', updatedExperience)
   }
 
   const updateExperience = (index: number, field: string, value: string) => {
-    const updatedExperience = resume.experience.map((exp, i) => {
+    const updatedExperience = experiences.map((exp, i) => {
       if (i === index) {
         return { ...exp, [field]: value }
       }
@@ -42,9 +45,9 @@ export function ExperienceSection({ resume, updateResume }: ExperienceSectionPro
   }
 
   const addDetail = (experienceIndex: number) => {
-    const updatedExperience = resume.experience.map((exp, i) => {
+    const updatedExperience = experiences.map((exp, i) => {
       if (i === experienceIndex) {
-        return { ...exp, details: [...exp.details, ''] }
+        return { ...exp, details: [...(exp.details || []), ''] }
       }
       return exp
     })
@@ -52,9 +55,9 @@ export function ExperienceSection({ resume, updateResume }: ExperienceSectionPro
   }
 
   const removeDetail = (experienceIndex: number, detailIndex: number) => {
-    const updatedExperience = resume.experience.map((exp, i) => {
+    const updatedExperience = experiences.map((exp, i) => {
       if (i === experienceIndex) {
-        const updatedDetails = exp.details.filter((_, j) => j !== detailIndex)
+        const updatedDetails = exp.details.filter((_, index) => index !== detailIndex)
         return { ...exp, details: updatedDetails }
       }
       return exp
@@ -63,7 +66,7 @@ export function ExperienceSection({ resume, updateResume }: ExperienceSectionPro
   }
 
   const updateDetail = (experienceIndex: number, detailIndex: number, value: string) => {
-    const updatedExperience = resume.experience.map((exp, i) => {
+    const updatedExperience = experiences.map((exp, i) => {
       if (i === experienceIndex) {
         const updatedDetails = exp.details.map((detail, j) => {
           if (j === detailIndex) {
@@ -79,8 +82,8 @@ export function ExperienceSection({ resume, updateResume }: ExperienceSectionPro
   }
 
   const generateDetails = async (index: number) => {
-    const experience = resume.experience[index]
-    if (!experience.title || !experience.company) {
+    const experience = experiences[index]
+    if (!experience?.title || !experience?.company) {
       toast({
         title: 'Error',
         description: 'Please fill in the job title and company first',
@@ -117,7 +120,7 @@ export function ExperienceSection({ resume, updateResume }: ExperienceSectionPro
 
       if (text) {
         const details = text.split('\n').filter(line => line.trim())
-        const updatedExperience = resume.experience.map((exp, i) => {
+        const updatedExperience = experiences.map((exp, i) => {
           if (i === index) {
             return { ...exp, details }
           }
@@ -141,42 +144,30 @@ export function ExperienceSection({ resume, updateResume }: ExperienceSectionPro
   }
 
   return (
-    <div className="space-y-6">
-      {resume.experience.map((exp, index) => (
-        <div key={index} className="space-y-4 p-4 border rounded-lg">
-          <div className="flex justify-between items-center">
-            <h3 className="text-lg font-semibold">Experience {index + 1}</h3>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => removeExperience(index)}
-            >
-              <Trash className="h-4 w-4" />
-            </Button>
-          </div>
+    <div className="space-y-4">
+      {experiences.map((exp, index) => (
+        <div key={index} className="space-y-2 p-4 border rounded-lg relative">
 
-          <div className="grid grid-cols-2 gap-4">
-            <Input
-              placeholder="Job Title"
-              value={exp.title}
-              onChange={(e) => updateExperience(index, 'title', e.target.value)}
-            />
-            <Input
-              placeholder="Company"
-              value={exp.company}
-              onChange={(e) => updateExperience(index, 'company', e.target.value)}
-            />
-            <Input
-              placeholder="Location"
-              value={exp.location}
-              onChange={(e) => updateExperience(index, 'location', e.target.value)}
-            />
-            <Input
-              placeholder="Date"
-              value={exp.date}
-              onChange={(e) => updateExperience(index, 'date', e.target.value)}
-            />
-          </div>
+          <Input
+            placeholder="Job Title"
+            value={exp.title || ''}
+            onChange={(e) => updateExperience(index, 'title', e.target.value)}
+          />
+          <Input
+            placeholder="Company"
+            value={exp.company || ''}
+            onChange={(e) => updateExperience(index, 'company', e.target.value)}
+          />
+          <Input
+            placeholder="Location"
+            value={exp.location || ''}
+            onChange={(e) => updateExperience(index, 'location', e.target.value)}
+          />
+          <Input
+            placeholder="Date"
+            value={exp.date || ''}
+            onChange={(e) => updateExperience(index, 'date', e.target.value)}
+          />
 
           <div className="space-y-2">
             <div className="flex justify-between items-center">
@@ -201,24 +192,33 @@ export function ExperienceSection({ resume, updateResume }: ExperienceSectionPro
             </div>
 
             {exp.details.map((detail, detailIndex) => (
-              <div key={detailIndex} className="flex gap-2">
+              <div key={detailIndex} className="flex items-center gap-2">
                 <Input
-                  placeholder="Add detail..."
                   value={detail}
-                  onChange={(e) =>
-                    updateDetail(index, detailIndex, e.target.value)
-                  }
+                  onChange={(e) => updateDetail(index, detailIndex, e.target.value)}
+                  className="flex-1"
                 />
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => removeDetail(index, detailIndex)}
+                  className="h-8 w-8 text-destructive"
                 >
                   <Trash className="h-4 w-4" />
                 </Button>
               </div>
             ))}
+            <Button
+            variant="destructive"
+            size="sm"
+            onClick={() => removeExperience(index)}
+            className="mt-2"
+          >
+            <Trash2 className="h-4 w-4 mr-2" />
+            Remove
+          </Button>
           </div>
+          
         </div>
       ))}
 
