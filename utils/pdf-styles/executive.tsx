@@ -247,9 +247,6 @@ export function ExecutivePDF({ resume }: { resume: Resume }) {
                 <Text style={[styles.contactText, styles.link]}>Portfolio</Text>
               </Link>
             )}
-            {contact.location && (
-              <Text style={styles.contactText}>{sanitizeText(contact.location)}</Text>
-            )}
           </View>
         </View>
 

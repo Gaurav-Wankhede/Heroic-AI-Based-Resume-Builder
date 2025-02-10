@@ -47,12 +47,6 @@ export function MinimalistTemplate({ resume, className }: MinimalistTemplateProp
               </a>
             </>
           )}
-          {contact.location && (
-            <>
-              <span className="hidden sm:inline">•</span>
-              <span>{contact.location}</span>
-            </>
-          )}
         </div>
       </header>
 

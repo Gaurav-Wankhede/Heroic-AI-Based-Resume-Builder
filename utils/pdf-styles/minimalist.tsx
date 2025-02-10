@@ -236,15 +236,6 @@ export function MinimalistPDF({ resume }: { resume: Resume }) {
                 </View>
               </>
             )}
-            {contact.location && (
-              <>
-                <Text style={styles.contactDivider}>•</Text>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                  <BuildingIcon width={10} height={10} color="#4B5563" />
-                  <Text style={styles.contactText}>{sanitizeText(contact.location)}</Text>
-                </View>
-              </>
-            )}
           </View>
         </View>
 

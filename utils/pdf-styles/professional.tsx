@@ -186,9 +186,6 @@ export function ProfessionalPDF({ resume }: { resume: Resume }) {
                   <Text style={styles.text}>{sanitizeText(contact.mobile)}</Text>
                 </View>
               )}
-              {contact.location && (
-                <Text style={styles.text}>{sanitizeText(contact.location)}</Text>
-              )}
               {contact.linkedin && (
                 <Link src={parseUrl(contact.linkedin)}>
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>

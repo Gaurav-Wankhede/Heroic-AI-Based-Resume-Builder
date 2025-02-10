@@ -137,9 +137,6 @@ const PDFTemplates: Record<keyof typeof templates, React.FC<{ resume: Resume }>>
                 {resume.contact?.mobile && (
                   <Text style={styles.text}>{resume.contact.mobile}</Text>
                 )}
-                {resume.contact?.location && (
-                  <Text style={styles.text}>{resume.contact.location}</Text>
-                )}
                 {resume.contact?.linkedin && (
                   <Link src={resume.contact.linkedin}>
                     <Text style={[styles.text, styles.link]}>LinkedIn</Text>

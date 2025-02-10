@@ -91,9 +91,6 @@ export const ResumePDF: React.FC<{ resume: Resume }> = ({ resume }) => {
           {contact.mobile && (
             <Text style={styles.text}>{contact.mobile}</Text>
           )}
-          {contact.location && (
-            <Text style={styles.text}>{contact.location}</Text>
-          )}
           {contact.linkedin && (
             <Link src={contact.linkedin}>
               <Text style={[styles.text, styles.link]}>LinkedIn</Text>
@@ -283,9 +280,6 @@ export const PDFTemplates = {
             )}
             {contact.mobile && (
               <Text style={styles.text}>{contact.mobile}</Text>
-            )}
-            {contact.location && (
-              <Text style={styles.text}>{contact.location}</Text>
             )}
             {contact.linkedin && (
               <Link src={contact.linkedin}>
