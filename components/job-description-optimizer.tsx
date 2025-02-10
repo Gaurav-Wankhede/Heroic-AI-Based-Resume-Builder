@@ -22,8 +22,10 @@ export function JobDescriptionOptimizer({ resume, updateResume }: JobDescription
   const [isOptimizing, setIsOptimizing] = useState(false)
   const { jobData, updateJobData } = useJobDescription()
 
+  const jobDescription = jobData?.jobDescription || ''
+
   const optimizeResume = async () => {
-    if (!jobData?.jobDescription?.trim()) {
+    if (!jobDescription.trim()) {
       toast({
         title: "Error",
         description: "Please enter a job description first",
@@ -45,7 +47,7 @@ export function JobDescriptionOptimizer({ resume, updateResume }: JobDescription
       const prompt = `As an ATS (Applicant Tracking System) optimization expert, analyze this resume against the job description and provide specific recommendations. Focus on increasing the resume's ATS score and matching rate.
 
 Job Description:
-${jobData.jobDescription}
+${jobDescription}
 
 Current Resume:
 Name: ${resume?.name || ''}
@@ -128,7 +130,7 @@ Please provide the following sections with ATS optimization in mind:
                 variant="outline" 
                 size="icon"
                 onClick={optimizeResume}
-                disabled={isOptimizing || !jobData.jobDescription.trim()}
+                disabled={isOptimizing || !jobDescription.trim()}
               >
                 {isOptimizing ? (
                   <span className="animate-spin">⏳</span>
@@ -145,7 +147,7 @@ Please provide the following sections with ATS optimization in mind:
       </div>
       <Textarea
         id="jobDescription"
-        value={jobData.jobDescription}
+        value={jobDescription}
         onChange={(e) => updateJobData({ jobDescription: e.target.value })}
         placeholder="Paste the job description here to optimize your resume..."
         className="min-h-[200px]"
