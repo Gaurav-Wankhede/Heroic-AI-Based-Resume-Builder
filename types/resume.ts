@@ -1,15 +1,9 @@
-import { ResumeType } from '@/components/resume-builder'
-
 export interface Contact {
   name?: string;
   email?: string;
-  phone?: string;
   mobile?: string;
-  location?: string;
-  role?: string;
   linkedin?: string;
   github?: string;
-  website?: string;
   portfolio?: string;
 }
 
@@ -52,22 +46,17 @@ export interface Certification {
   url: string
 }
 
+export type ResumeType = 'fresher' | 'transition' | 'experienced'
+
 export interface Resume {
   name: string;
-  contact: {
-    email?: string;
-    mobile?: string;
-    linkedin?: string;
-    github?: string;
-    portfolio?: string;
-    location?: string;
-  };
+  contact: Contact;
   education: Education[];
   experience: Experience[];
   projects: Project[];
   skills: Skills;
   summary?: string;
-  resumeType: ResumeType;
+  resumeType?: ResumeType;
   certifications?: Certification[]
 }
 

@@ -7,19 +7,18 @@ import { templates } from "@/lib/templates"
 import { Resume } from "@/types/resume"
 
 interface TemplateSelectorProps {
-  resume: Resume
-  onSelect: (newTemplate: TemplateType) => void
-  defaultValue: TemplateType
+  onSelect: (value: TemplateType) => void
+  defaultValue?: TemplateType
   className?: string
+  resume: Resume
   suggestedTemplates?: readonly string[]
 }
 
 export function TemplateSelector({ 
-  resume, 
   onSelect, 
-  defaultValue, 
+  defaultValue = 'professional',
   className,
-  suggestedTemplates 
+  resume 
 }: TemplateSelectorProps) {
   return (
     <div className={cn("w-full", className)}>

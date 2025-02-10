@@ -5,16 +5,26 @@ import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { DonateButton } from '@/components/donate-button'
-import { Download } from 'lucide-react'
+import { Download, Coffee } from 'lucide-react'
 import { useResumeContext } from '@/contexts/resume-context'
 import { generatePDF } from '@/utils/generate-pdf'
 import { useState } from 'react'
 import { useToast } from '@/hooks/use-toast'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import Image from 'next/image'
 
 export function Navbar() {
   const { resume, selectedTemplate } = useResumeContext()
   const { toast } = useToast()
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false)
+  const [isOpen, setIsOpen] = useState(false)
   const pathname = usePathname()
 
   const handleDownloadPDF = async () => {
@@ -62,16 +72,36 @@ export function Navbar() {
         <div className="flex items-center gap-x-4">
           <Button 
             variant="ghost"
-            className="gap-2 rounded-full transition-all duration-200 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium"
+            className={cn(
+              "gap-2 rounded-full transition-all duration-200",
+              "bg-[#FF813F] hover:bg-[#FF9B3F]",
+              "text-white font-medium",
+              "shadow-[0_2px_8px_rgba(255,129,63,0.25)]",
+              "hover:shadow-[0_4px_12px_rgba(255,129,63,0.35)]",
+              "border border-[#FF9B3F]/20"
+            )}
+            onClick={() => setIsOpen(true)}
+          >
+            <Coffee className="h-4 w-4 animate-bounce" />
+            <span className="font-medium">Buy me a coffee</span>
+          </Button>
+
+          <Button 
             onClick={handleDownloadPDF}
             disabled={isGeneratingPDF}
+            className={cn(
+              "gap-2 rounded-full transition-all duration-200",
+              "bg-gradient-to-r from-blue-500 to-blue-600",
+              "hover:from-blue-600 hover:to-blue-700",
+              "text-white font-medium",
+              "shadow-[0_2px_8px_rgba(59,130,246,0.25)]",
+              "hover:shadow-[0_4px_12px_rgba(59,130,246,0.35)]",
+              "border border-blue-400/20"
+            )}
           >
             <Download className="h-4 w-4" />
-            <span className="font-medium">
-              {isGeneratingPDF ? 'Generating...' : 'Download PDF'}
-            </span>
+            {isGeneratingPDF ? 'Generating...' : 'Download PDF'}
           </Button>
-          <DonateButton />
         </div>
       </div>
     </header>

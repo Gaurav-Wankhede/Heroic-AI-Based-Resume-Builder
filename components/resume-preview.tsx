@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Resume } from '@/types/resume'
+import { Resume, ResumeType } from '@/types/resume'
 import { TemplateSelector } from './template-selector'
 import { TemplateType } from './templates'
 import { ExecutiveTemplate } from './templates/ExecutiveTemplate'
@@ -19,6 +19,7 @@ import { Download } from "lucide-react"
 import { ErrorBoundary, FallbackProps } from 'react-error-boundary'
 import { cn } from '@/lib/utils'
 import { RESUME_TYPES } from './resume-builder'
+import { useResumeContext } from '@/contexts/resume-context'
 
 interface ResumePreviewProps {
   resume: Resume
@@ -55,20 +56,35 @@ const TemplateComponents = {
 } as const
 
 // Update the type definition
-type ResumeType = 'technical' | 'business' | 'creative' | 'academic'
+type TemplateCategory = 'technical' | 'business' | 'creative' | 'academic'
 
-const TEMPLATE_BY_RESUME_TYPE: Record<ResumeType, readonly string[]> = {
+const TEMPLATE_BY_CATEGORY: Record<TemplateCategory, readonly string[]> = {
   technical: ['tech-innovator', 'professional', 'modern'],
   business: ['executive', 'professional', 'minimalist'],
   creative: ['creative', 'modern', 'project-portfolio'],
   academic: ['academic-scholar', 'oxford-standard', 'cantabrigian']
 }
 
+// Add this near the top with other constants
+const resumeTypeOptions = [
+  { value: 'fresher', label: 'Fresher' },
+  { value: 'transition', label: 'Career Transition' },
+  { value: 'experienced', label: 'Experienced' }
+] as const
+
+// Update the resume type mapping with proper type
+const RESUME_TYPE_MAP: Record<ResumeType, string> = {
+  'fresher': 'Fresher',
+  'transition': 'Career Transition',
+  'experienced': 'Experienced'
+} as const
+
 export function ResumePreview({ 
   resume, 
   onDownload,
   isGeneratingPDF = false 
 }: ResumePreviewProps) {
+  const { updateResume } = useResumeContext()
   const [templateType, setTemplateType] = useState<TemplateType>('professional')
   const [scale, setScale] = useState(1)
   const [previewHeight, setPreviewHeight] = useState('auto')
@@ -106,7 +122,7 @@ export function ResumePreview({
   // Update the template suggestion logic
   useEffect(() => {
     if (resume.resumeType) {
-      const suggestedTemplates = TEMPLATE_BY_RESUME_TYPE[resume.resumeType as ResumeType]
+      const suggestedTemplates = TEMPLATE_BY_CATEGORY[resume.resumeType as TemplateCategory]
       if (suggestedTemplates && !suggestedTemplates.includes(templateType)) {
         setTemplateType(suggestedTemplates[0] as TemplateType)
       }
@@ -133,9 +149,7 @@ export function ResumePreview({
             <h2 className="text-lg font-semibold text-gray-900">Resume Preview</h2>
             {resume.resumeType && (
               <div className="text-sm text-muted-foreground">
-                Optimized for {RESUME_TYPES.find((t: typeof RESUME_TYPES[number]) => 
-                  t.value === resume.resumeType
-                )?.label} Roles
+                Optimized for {RESUME_TYPE_MAP[resume.resumeType as ResumeType]} Roles
               </div>
             )}
             {onDownload && (
@@ -160,10 +174,27 @@ export function ResumePreview({
               className="w-full"
               suggestedTemplates={
                 resume.resumeType 
-                  ? TEMPLATE_BY_RESUME_TYPE[resume.resumeType as ResumeType]
+                  ? TEMPLATE_BY_CATEGORY[resume.resumeType as TemplateCategory]
                   : undefined
               }
             />
+          </div>
+
+          {/* Resume Type Buttons */}
+          <div>
+            <label className="text-sm font-medium text-gray-700 mb-2 block">
+              Select Resume Type
+            </label>
+            {Object.entries(RESUME_TYPE_MAP).map(([value, label]) => (
+              <Button
+                key={value}
+                variant={resume.resumeType === value ? 'default' : 'outline'}
+                className="w-full capitalize"
+                onClick={() => updateResume('resumeType', value)}
+              >
+                {label}
+              </Button>
+            ))}
           </div>
         </div>
 
@@ -190,6 +221,13 @@ export function ResumePreview({
                 boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
               }}
             >
+              <div className="resume-header">
+                <h1 className="text-2xl font-bold">{resume.name}</h1>
+                <div className="contact-info">
+                  {resume.contact.email && <span>{resume.contact.email}</span>}
+                  {resume.contact.mobile && <span>{resume.contact.mobile}</span>}
+                </div>
+              </div>
               <CurrentTemplate resume={resume} className="w-full h-full" />
             </div>
           )}

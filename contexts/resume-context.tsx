@@ -12,7 +12,6 @@ const initialResume: Resume = {
     linkedin: 'https://linkedin.com/in/johndeveloper',
     github: 'https://github.com/johndeveloper',
     portfolio: 'https://johndeveloper.dev',
-    location: 'San Francisco, CA'
   },
   summary: 'Full-stack developer with 4+ years of experience building scalable web applications. Specialized in React, Node.js, and cloud architecture. Proven track record of delivering high-performance solutions that drive business growth. Led teams in developing applications serving 100K+ users.',
   education: [

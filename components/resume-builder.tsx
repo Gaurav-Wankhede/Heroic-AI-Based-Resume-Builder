@@ -21,93 +21,40 @@ import { SkillsSection } from './skills-section'
 import { CertificationsSection } from './certifications-section'
 import { SectionHeader } from './section-header'
 import { TemplateSelector } from './template-selector'
+import { Resume } from '@/types/resume';
 
 interface ResumeBuilderProps {
   template?: keyof typeof templates
 }
 
-export const RESUME_TYPES = [
-  {
-    value: 'technical',
-    label: 'Technical',
-    description: 'For software, IT, engineering, and technical roles.',
-    categories: [
-      'Programming Languages',
-      'Frameworks & Technologies',
-      'Developer Tools',
-      'Databases & Infrastructure',
-      'Industry Tools',
-      'Technical Methodologies'
-    ]
-  },
-  {
-    value: 'business',
-    label: 'Business',
-    description: 'For management, marketing, sales, and business roles.',
-    categories: [
-      'Industry Software',
-      'Business Systems',
-      'Data & Analytics',
-      'Technical Platforms',
-      'Industry Standards',
-      'Domain Tools'
-    ]
-  },
-  {
-    value: 'creative',
-    label: 'Creative',
-    description: 'For design, content, media, and creative roles.',
-    categories: [
-      'Design Software',
-      'Creative Platforms',
-      'Production Tools',
-      'Media Technologies',
-      'Industry Standards',
-      'Creative Suites'
-    ]
-  },
-  {
-    value: 'academic',
-    label: 'Academic',
-    description: 'For research, teaching, and academic roles.',
-    categories: [
-      'Research Tools',
-      'Academic Software',
-      'Analysis Platforms',
-      'Publication Tools',
-      'Research Methodologies',
-      'Academic Standards'
-    ]
-  },
-  {
-    value: 'fresher',
-    label: 'Fresher',
-    description: 'For recent graduates and entry-level positions.',
-    categories: [
-      'Academic Knowledge',
-      'Technical Skills',
-      'Project Tools',
-      'Development Platforms',
-      'Basic Technologies',
-      'Learning Resources'
-    ]
-  },
-  {
-    value: 'transition',
-    label: 'Career Transition',
-    description: 'For professionals changing career paths.',
-    categories: [
-      'Transferable Skills',
-      'New Technologies',
-      'Industry Tools',
-      'Learning Platforms',
-      'Relevant Standards',
-      'Transition Resources'
-    ]
-  }
-] as const
+const skillCategories = [
+  'languages',
+  'frameworks',
+  'developerTools',
+  'libraries'
+]
 
-export type ResumeType = typeof RESUME_TYPES[number]['value']
+export const RESUME_TYPES = ['fresher', 'transition', 'experienced'] as const
+
+const initialResume: Resume = {
+  name: '',
+  contact: {
+    email: '',
+    mobile: '',
+    linkedin: '',
+    github: '',
+    portfolio: ''
+  },
+  education: [],
+  experience: [],
+  projects: [],
+  skills: {
+    languages: '',
+    frameworks: '',
+    developerTools: '',
+    libraries: ''
+  }
+}
 
 export function ResumeBuilder({ template = 'professional' }: ResumeBuilderProps) {
   const { resume, selectedTemplate, setSelectedTemplate, updateResume } = useResumeContext()
@@ -152,34 +99,24 @@ export function ResumeBuilder({ template = 'professional' }: ResumeBuilderProps)
       label: 'Resume Type',
       content: (
         <div className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {RESUME_TYPES.map((type) => (
-              <Button
-                key={type.value}
-                variant={resume.resumeType === type.value ? 'default' : 'outline'}
-                className="w-full"
-                onClick={() => updateResume('resumeType', type.value)}
-              >
-                <div className="text-left">
-                  <div className="font-medium">{type.label}</div>
-                  <div className="text-xs text-muted-foreground">{type.description}</div>
-                </div>
-              </Button>
-            ))}
-          </div>
-          <div className="mt-4">
-            <h3 className="text-sm font-medium mb-2">Relevant Skill Categories:</h3>
-            <div className="text-sm text-muted-foreground">
-              {RESUME_TYPES.find(t => t.value === resume.resumeType)?.categories.map(cat => (
-                <span key={cat} className="inline-block bg-gray-100 rounded px-2 py-1 mr-2 mb-2">
-                  {cat}
-                </span>
-              ))}
-            </div>
-          </div>
+          {RESUME_TYPES.map((type) => (
+            <Button
+              key={type}
+              variant={resume.resumeType === type ? 'default' : 'outline'}
+              className="w-full capitalize"
+              onClick={() => updateResume('resumeType', type)}
+            >
+              {type}
+            </Button>
+          ))}
+          <p className="text-sm text-muted-foreground">
+            {resume.resumeType === 'fresher' && 'For students or recent graduates with limited work experience.'}
+            {resume.resumeType === 'transition' && 'For professionals changing careers or industries.'}
+            {resume.resumeType === 'experienced' && 'For professionals with significant work experience.'}
+          </p>
         </div>
       ),
-      description: "Select your resume type to get tailored skill categories."
+      description: "Select your resume type to get tailored suggestions."
     },
     {
       value: 'template',
@@ -232,10 +169,10 @@ export function ResumeBuilder({ template = 'professional' }: ResumeBuilderProps)
       content: <SkillsSection 
         resume={resume} 
         updateResume={updateResume}
-        categories={[...(RESUME_TYPES.find(t => t.value === resume.resumeType)?.categories || [])]}
+        categories={skillCategories}
       />,
       hasAI: true,
-      description: "Add your professional skills based on your resume type."
+      description: "Add your technical skills and competencies."
     },
     {
       value: 'certifications',

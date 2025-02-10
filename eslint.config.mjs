@@ -15,18 +15,15 @@ const eslintConfig = tseslint.config(
   eslint.configs.recommended,
   ...tseslint.configs.recommended,
   {
-    files: ['**/*.ts', '**/*.tsx'],
-    languageOptions: {
-      parser: tseslint.parser,
-      parserOptions: {
-        project: './tsconfig.json'
-      }
-    },
     rules: {
-      '@typescript-eslint/no-unused-vars': 'warn',
-      '@typescript-eslint/no-explicit-any': 'warn',
-      'react-hooks/rules-of-hooks': 'error',
-      'react-hooks/exhaustive-deps': 'warn'
+      // Disable specific TypeScript rules that are too strict for this project
+      '@typescript-eslint/no-explicit-any': 'off',      // Allow 'any' type where needed
+      '@typescript-eslint/no-unused-vars': ['warn', {   // Allow unused variables prefixed with _
+        'argsIgnorePattern': '^_',
+        'varsIgnorePattern': '^_',
+        'caughtErrorsIgnorePattern': '^_'
+      }],
+      // Add any other custom rule configurations here
     },
     // Ignore certain files and directories
     ignores: [

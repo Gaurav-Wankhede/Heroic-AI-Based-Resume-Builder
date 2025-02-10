@@ -13,17 +13,22 @@ interface ContactSectionProps {
 export function ContactSection({ resume, updateResume}: ContactSectionProps) {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
-    const currentContact = resume.contact || {
-      mobile: '',
-      email: '',
-      linkedin: '',
-      github: '',
-      portfolio: ''
+    if (name === 'name') {
+      updateResume('name', value)
+    } else {
+      const currentContact = resume.contact || {
+        email: '',
+        mobile: '',
+        linkedin: '',
+        github: '',
+        portfolio: ''
+      }
+      updateResume('contact', { ...currentContact, [name]: value })
     }
-    updateResume('contact', { ...currentContact, [name]: value })
   }
 
   const contact = resume.contact || {
+    name: '',
     mobile: '',
     email: '',
     linkedin: '',
@@ -33,6 +38,19 @@ export function ContactSection({ resume, updateResume}: ContactSectionProps) {
 
   return (
     <div className="space-y-4">
+      <div className="grid w-full items-center gap-1.5">
+        <Label htmlFor="name">Full Name</Label>
+        <Input
+          type="text"
+          id="name"
+          name="name"
+          value={resume.name}
+          onChange={handleInputChange}
+          placeholder="John Doe"
+          className="font-medium"
+        />
+      </div>
+
       <div className="grid w-full items-center gap-1.5">
         <Label htmlFor="mobile">Mobile Number</Label>
         <Input
