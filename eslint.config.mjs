@@ -1,17 +1,12 @@
 import { dirname } from "path";
 import { fileURLToPath } from "url";
-import { FlatCompat } from "@eslint/eslintrc";
 import eslint from '@eslint/js';
 import tseslint from 'typescript-eslint';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-});
-
-const eslintConfig = tseslint.config(
+export default tseslint.config(
   eslint.configs.recommended,
   ...tseslint.configs.recommended,
   {
@@ -20,15 +15,21 @@ const eslintConfig = tseslint.config(
       parser: tseslint.parser,
       parserOptions: {
         project: './tsconfig.json',
-      },
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+        ecmaFeatures: {
+          jsx: true
+        }
+      }
     },
+    plugins: ['react', 'react-hooks'],
     rules: {
       '@typescript-eslint/no-unused-vars': 'warn',
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/explicit-module-boundary-types': 'off',
       'react-hooks/rules-of-hooks': 'error',
-      'react-hooks/exhaustive-deps': 'warn',
+      'react-hooks/exhaustive-deps': 'warn'
     },
     // Ignore certain files and directories
     ignores: [
@@ -39,5 +40,3 @@ const eslintConfig = tseslint.config(
     ]
   }
 );
-
-export default eslintConfig;

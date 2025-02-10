@@ -9,9 +9,15 @@ import { Card } from '@/components/ui/card'
 import { useResumeContext } from '@/contexts/resume-context'
 import { useEffect } from 'react'
 import { useToast } from '@/hooks/use-toast'
+import { Resume } from '@/types/resume'
 
-export function CertificationsSection() {
-  const { resume, addCertification, removeCertification, updateCertification } = useResumeContext()
+interface CertificationsSectionProps {
+  resume: Resume
+  updateResume: (field: keyof Resume, value: any) => void
+}
+
+export function CertificationsSection({ resume, updateResume }: CertificationsSectionProps) {
+  const { addCertification, removeCertification, updateCertification } = useResumeContext()
   const { toast } = useToast()
 
   useEffect(() => {
