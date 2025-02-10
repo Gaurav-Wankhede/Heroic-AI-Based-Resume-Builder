@@ -20,7 +20,7 @@ interface JobDescriptionOptimizerProps {
 export function JobDescriptionOptimizer({ resume, updateResume }: JobDescriptionOptimizerProps) {
   const { toast } = useToast()
   const [isOptimizing, setIsOptimizing] = useState(false)
-  const { jobData, setJobDescription, setAnalysisResults } = useJobDescription()
+  const { jobData, updateJobData } = useJobDescription()
 
   const optimizeResume = async () => {
     if (!jobData?.jobDescription?.trim()) {
@@ -32,8 +32,8 @@ export function JobDescriptionOptimizer({ resume, updateResume }: JobDescription
       return
     }
 
-    setIsOptimizing(true)
     try {
+      setIsOptimizing(true)
       const experienceString = resume?.experience?.map(exp => 
         `- ${exp.title} at ${exp.company} (${exp.date})
           ${exp.details?.join('\n  ')}`)?.join('\n') || 'No experience listed'
@@ -100,7 +100,7 @@ Please provide the following sections with ATS optimization in mind:
 
       // Update resume summary and store analysis results
       updateResume('summary', results.summary)
-      setAnalysisResults(results)
+      updateJobData({ analysisResults: results })
 
       toast({
         title: "Success",
@@ -146,7 +146,7 @@ Please provide the following sections with ATS optimization in mind:
       <Textarea
         id="jobDescription"
         value={jobData.jobDescription}
-        onChange={(e) => setJobDescription(e.target.value)}
+        onChange={(e) => updateJobData({ jobDescription: e.target.value })}
         placeholder="Paste the job description here to optimize your resume..."
         className="min-h-[200px]"
       />

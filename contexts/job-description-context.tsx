@@ -1,38 +1,29 @@
 'use client'
 
-import React, { createContext, useContext, ReactNode, useState } from 'react'
+import React, { createContext, useContext, ReactNode, useState, useCallback } from 'react'
 
-interface JobData {
-  jobDescription: string
+export interface JobDescriptionContextType {
+  jobData: {
+    jobDescription?: string;
+    analysisResults?: any; // Define proper type if needed
+  };
+  updateJobData: (data: Partial<{ jobDescription: string; analysisResults: any }>) => void;
 }
 
-interface JobDescriptionContextType {
-  jobData: JobData | null
-  updateJobDescription: (description: string) => void
-  clearJobDescription: () => void
-}
+export const JobDescriptionContext = createContext<JobDescriptionContextType>({
+  jobData: {},
+  updateJobData: () => {}
+})
 
-const JobDescriptionContext = createContext<JobDescriptionContextType | undefined>(undefined)
+export function JobDescriptionProvider({ children }: { children: React.ReactNode }) {
+  const [jobData, setJobData] = useState<JobDescriptionContextType['jobData']>({})
 
-export function JobDescriptionProvider({ children }: { children: ReactNode }) {
-  const [jobData, setJobData] = useState<JobData | null>(null)
-
-  const updateJobDescription = (description: string) => {
-    setJobData({ jobDescription: description })
-  }
-
-  const clearJobDescription = () => {
-    setJobData(null)
-  }
+  const updateJobData = useCallback((data: Partial<{ jobDescription: string; analysisResults: any }>) => {
+    setJobData(prev => ({ ...prev, ...data }))
+  }, [])
 
   return (
-    <JobDescriptionContext.Provider
-      value={{
-        jobData,
-        updateJobDescription,
-        clearJobDescription,
-      }}
-    >
+    <JobDescriptionContext.Provider value={{ jobData, updateJobData }}>
       {children}
     </JobDescriptionContext.Provider>
   )
