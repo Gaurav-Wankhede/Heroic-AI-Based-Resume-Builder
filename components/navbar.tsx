@@ -1,21 +1,26 @@
 'use client'
 
-import { Wand2, Download } from 'lucide-react'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
+import { DonateButton } from '@/components/donate-button'
+import { Download } from 'lucide-react'
 import { useResumeContext } from '@/contexts/resume-context'
 import { generatePDF } from '@/utils/generate-pdf'
 import { useState } from 'react'
 import { useToast } from '@/hooks/use-toast'
 
 export function Navbar() {
-  const { resume } = useResumeContext()
+  const { resume, selectedTemplate } = useResumeContext()
   const { toast } = useToast()
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false)
+  const pathname = usePathname()
 
   const handleDownloadPDF = async () => {
     try {
       setIsGeneratingPDF(true)
-      await generatePDF(resume)
+      await generatePDF(resume, selectedTemplate)
       toast({
         title: "Success",
         description: "Resume PDF has been downloaded",
@@ -32,23 +37,43 @@ export function Navbar() {
   }
 
   return (
-    <nav className="border-b shadow-sm bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto px-4 py-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Wand2 className="h-6 w-6" />
-            <h1 className="text-xl font-semibold">Heroic AI Based Resume Builder</h1>
-          </div>
+    <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 shadow-sm">
+      <div className="container flex h-16 items-center justify-between px-4">
+        <div className="flex items-center gap-x-6">
+          <Link className="flex items-center space-x-2" href="/">
+            <span className="font-bold text-xl bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+              Heroic Resume Builder
+            </span>
+          </Link>
+          <nav className="flex items-center gap-x-4">
+            <Link
+              href="/resume"
+              className={cn(
+                'text-sm font-medium transition-colors hover:text-primary',
+                pathname === '/resume'
+                  ? 'text-black dark:text-white'
+                  : 'text-muted-foreground'
+              )}
+            >
+              Resume
+            </Link>
+          </nav>
+        </div>
+        <div className="flex items-center gap-x-4">
           <Button 
-            onClick={handleDownloadPDF} 
+            variant="ghost"
+            className="gap-2 rounded-full transition-all duration-200 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium"
+            onClick={handleDownloadPDF}
             disabled={isGeneratingPDF}
-            className="flex items-center gap-2"
           >
             <Download className="h-4 w-4" />
-            {isGeneratingPDF ? 'Generating...' : 'Download PDF'}
+            <span className="font-medium">
+              {isGeneratingPDF ? 'Generating...' : 'Download PDF'}
+            </span>
           </Button>
+          <DonateButton />
         </div>
       </div>
-    </nav>
+    </header>
   )
 }

@@ -43,6 +43,11 @@ export function ExecutiveTemplate({ resume, className }: ExecutiveTemplateProps)
               LinkedIn
             </a>
           )}
+          {contact.portfolio && (
+            <a href={contact.portfolio} className="hover:text-blue-700 transition-colors">
+              Portfolio
+            </a>
+          )}
           {contact.location && (
             <span className="flex items-center gap-1">
               <Building2 className="h-4 w-4" />

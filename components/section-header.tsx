@@ -11,24 +11,26 @@ import { useResumeContext } from '@/contexts/resume-context'
 import { useJobDescription } from '@/contexts/job-description-context'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Pencil } from 'lucide-react'
+import { RESUME_TYPES } from './resume-builder'
 
 interface SectionHeaderProps {
   title: string
+  description?: string
   hasAI?: boolean
   section?: keyof Resume
   resume?: Resume
   className?: string
+  projectIndex?: number
 }
-
-// Add type for the formatted content
-type FormattedContent = string | Skills | Experience[] | Project[];
 
 export function SectionHeader({ 
   title, 
+  description,
   hasAI = false, 
   section,
   resume,
-  className 
+  className,
+  projectIndex 
 }: SectionHeaderProps) {
   const [isGenerating, setIsGenerating] = useState(false)
   const { toast } = useToast()
@@ -49,14 +51,6 @@ export function SectionHeader({
 
     try {
       setIsGenerating(true)
-      
-      const resumeTypeContext = resume?.resumeType ? 
-        `This is a ${resume.resumeType.toUpperCase()} resume. ` +
-        `${resume.resumeType === 'fresher' ? 'Focus on academic projects and internships. ' : 
-          resume.resumeType === 'transition' ? 'Emphasize transferable skills and relevant projects. ' :
-          'Highlight progressive responsibility and key achievements. '}` : ''
-      
-      const jobContext = `Given this job description:\n${jobData.jobDescription}\n\n${resumeTypeContext}\n`
       let prompt = ''
       
       const currentExperience = resume.experience?.[0]
@@ -64,53 +58,107 @@ export function SectionHeader({
       
       switch (section) {
         case 'summary': {
-          prompt = jobContext +
-            `Generate a powerful professional summary that positions you as an ideal candidate for this role.
+          const resumeTypeConfig = RESUME_TYPES.find((t: typeof RESUME_TYPES[number]) => t.value === resume.resumeType)
+          
+          prompt = `I'm applying for this position. Here's the job posting:
+            ${jobData.jobDescription}
 
-            Current Context:
-            - Resume Type: ${resume.resumeType || 'professional'}
-            - Current Role: ${currentRole}
-            - Experience: ${resume.experience?.map(exp => 
-                `\n    • ${exp.title} at ${exp.company} (${exp.date})\n      ${exp.details.join('\n      ')}`
-              ).join('\n') || 'No prior experience'}
-            - Projects: ${resume.projects?.map(proj => 
-                `\n    • ${proj.name} (${proj.technologies})\n      ${proj.details.join('\n      ')}`
-              ).join('\n') || 'No projects listed'}
-            - Education: ${resume.education?.map(edu =>
-                `\n    • ${edu.degree} from ${edu.school} (${edu.date})`
-              ).join('\n') || 'No education listed'}
-            - Skills: ${Object.entries(resume.skills || {})
-                .filter(([_, value]) => value)
-                .map(([key, value]) => `\n    • ${key}: ${value}`)
-                .join('') || 'No skills listed'}
+            As an HR professional scanning my summary section in 7 seconds only, you need to see immediate value and impact without preamble.
+
+            My Current Profile:
+            Resume Type: ${resumeTypeConfig?.label || 'Professional'}
+
+            My Experience Highlights:
+            ${resume.experience?.map(exp => `
+            ${exp.title} at ${exp.company} (${exp.date})
+            My Key Achievements:
+            ${exp.details.map(detail => detail.trim()).join('\n')}
+            `).join('\n\n') || 'No prior experience'}
+
+            My Technical Projects:
+            ${resume.projects?.map(proj => `
+            ${proj.name} (${proj.technologies})
+            My Impact: ${proj.details.map(detail => detail.trim()).join('\n')}
+            `).join('\n\n') || 'No projects listed'}
+
+            My Core Competencies:
+            ${Object.entries(resume.skills || {})
+              .filter(([_, value]) => value)
+              .map(([category, skills]) => `${category}: ${skills}`)
+              .join('\n')}
+
+            Create a powerful ${resumeTypeConfig?.label || 'Professional'} summary that:
+
+            1. Position Statement (10-15 words):
+            - Start with current role and experience level
+            - Include primary domain expertise
+            - Match job requirements exactly
+
+            2. Technical Expertise (15-20 words):
+            - Highlight top 2-3 technical skills from job posting
+            - Include most impressive quantified achievement
+            - Reference relevant technologies
+
+            3. Value Proposition (15-20 words):
+            - Emphasize business impact
+            - Include scale or scope of work
+            - Reference industry relevance
 
             Requirements:
-            - Write in first person, present tense
-            - Start with your role and years of experience
-            - Include key technical skills relevant to the job
-            - Mention significant achievements with metrics
-            - Keep under 50 words
-            - Make it direct and impactful
-            - NO prefixes like "Results:" or similar markers
-            - NO bullet points
+            - Maximum 50 words total
+            - Use present tense
+            - Include 1-2 specific metrics
+            - Match job keywords exactly
+            - Focus on achievements over responsibilities
+            - Maintain professional tone
+            - No buzzwords or fluff
+            - No soft skills without context
+            - No personal pronouns at start of sentences
+            - No bullet points or markers
             
-            Example Format:
-            "Senior software engineer with 5+ years building scalable applications. Specialize in React, Node.js, and cloud architecture, delivering solutions that handle 1M+ daily users. Reduced infrastructure costs by 40% while maintaining 99.9% uptime across multiple high-traffic platforms."
-            
-            Important:
-            - Focus on matching job requirements
-            - Include relevant technologies
-            - Highlight measurable achievements
-            - Keep it concise and professional
-            - Write in a natural, flowing style`
+            Strictly remove any unwanted:
+            - *
+            - Here are my achievements:
+            - Here are my key achievements:
+            - Here is my summary:
+            - Here is my experience:
+            - Here is my projects:
+            - Here is my skills:
+            - Here is your summary:
+            - Here is your experience:
+            - Here is your projects:
+            - Here is your skills:
+
+            Format:
+            [Role/Experience Statement] specializing in [Key Technical Skills]. Demonstrated expertise in [Technical Achievement with Metrics], delivering [Business Impact] for [Industry/Scale Context].
+
+            ATS Optimization:
+            - Use exact job posting keywords
+            - Do not use any preamble or introduction
+            - Do not use bullet points or markers
+            - Do not use any prefixes like "Results:" or similar markers
+            - Do not add any other text or categories
+            - Strictly remove unwanted special characters like * or -
+            - Include both full and abbreviated terms
+            - Match technical terms precisely
+            - Use standard industry terminology
+            - Avoid custom formatting
+
+            Example Pattern:
+            "Senior full-stack developer with 5+ years building enterprise applications, specializing in React and Node.js microservices. Architected cloud solutions processing 2M+ daily transactions, reducing infrastructure costs by 40% while maintaining 99.9% uptime across high-traffic platforms."`
 
           const response = await generateAIContent(prompt)
           if (response.error) throw new Error(response.error)
           
-          // Clean up any remaining markers and trim
+          // Clean and format the summary
           const cleanedResponse = response.text
-            .replace(/^(Results:|Result:|Summary:|Professional Summary:)/i, '')
+            .replace(/^(Results:|Result:|Summary:|Professional Summary:|Profile:|About:|Overview:)/i, '')
+            .replace(/^[•\-*]\s*/gm, '')
+            .replace(/\n+/g, ' ')
             .trim()
+            .split(' ')
+            .slice(0, 50) // Enforce 50-word limit
+            .join(' ')
           
           updateResume('summary', cleanedResponse)
           break
@@ -121,34 +169,76 @@ export function SectionHeader({
             company: '',
             location: '',
             date: new Date().getFullYear().toString(),
-            details: [] // Add details array to match Experience type
+            details: []
           }
 
-          prompt = jobContext +
-            `Generate 3-4 impactful experience points for ${currentExperience.title} at ${currentExperience.company} using STAR (Situation, Task, Action, Result) or CAR (Challenge, Action, Result) method.
+          prompt = `I'm applying for this position. Here's the job posting:
+            ${jobData.jobDescription}
 
-            Current Context:
-            - Resume Type: ${resume.resumeType || 'professional'}
-            - Current Role: ${currentRole}
-            - Current Experience: ${JSON.stringify(resume.experience, null, 2)}
+            As an HR professional scanning my experience section in 7 seconds only, you need to see immediate value and impact without preamble.
 
-            Guidelines:
-            1. Each point must follow this structure:
-               - Situation/Challenge: Brief context of the problem
-               - Action: Technical implementation and approach
-               - Result: Quantifiable impact with metrics
+            Analyze my current experience:
+            ${resume.experience?.map(exp => `
+            Role: ${exp.title}
+            Company: ${exp.company}
+            Duration: ${exp.date}
+            Key Achievements:
+            ${exp.details.map(detail => `  • ${detail}`).join('\n')}
+            `).join('\n\n') || 'No prior experience'}
 
-            2. Format each point as:
-               "[Action Verb] [Technical Solution] to address [Challenge/Situation], resulting in [Measurable Outcome]"
+            Technical Context:
+            - Skills: ${Object.entries(resume.skills || {})
+              .filter(([_, value]) => value)
+              .map(([key, value]) => `${key}: ${value}`)
+              .join('\n  ')}
+            - Projects: ${resume.projects?.map(p => p.name).join(', ') || 'None listed'}
 
-            3. Requirements:
-               - Start with powerful action verbs (e.g., Engineered, Implemented, Architected)
-               - Include specific technologies and methodologies
-               - Quantify results with numbers and percentages
-               - Keep each point under 30 words
-               - Focus on achievements relevant to the job requirements
-               - Each point must be on a new line
-               - NO bullet points or symbols`
+            Transform my experience into exactly 3-4 powerful achievement statements that:
+            1. Match the job requirements
+            2. Showcase technical expertise
+            3. Demonstrate business impact
+            4. Highlight leadership and growth
+
+            Use these frameworks:
+
+            STAR Method (Situation-Task-Action-Result):
+            - Situation: What was the business context/challenge?
+            - Task: What was your specific responsibility?
+            - Action: What technical solution did you implement?
+            - Result: What measurable impact did you achieve?
+
+            Psychology Triggers for HR:
+            1. Authority: Technical leadership terms
+            2. Scarcity: Unique technical solutions
+            3. Social Proof: Industry-standard tools
+            4. Problem-Solution: Clear value delivery
+            5. Numbers: Leading metrics
+
+            Requirements:
+            - Generate EXACTLY 3-4 achievement statements without preamble
+            - Begin with powerful action verbs
+            - Include exact job posting keywords
+            - Focus on achievements over duties
+            - Quantify all impacts (%, $, time)
+            - Keep each point under 25 words
+            - Use past tense
+            - Do not include any preamble or introduction
+            - Do not use bullet points or markers
+            - Do not use any prefixes like "Results:" or similar markers
+
+            Achievement Formula:
+            "[Power Verb] [Technical Solution] for [Business Challenge], [Quantified Impact] using [Job-Matched Skills]"
+
+            Format:
+            - Direct statements
+            - Do not use bullet points or markers
+            - Do not use any prefixes like "Results:" or similar markers
+            - Do not use any other text or categories
+            - Do not use any preamble or introduction
+            - One achievement per line
+            - Lead with metrics when possible
+            - No prefixes or bullets
+            - MAXIMUM 4 statements total`
 
           const response = await generateAIContent(prompt)
           if (response.error) throw new Error(response.error)
@@ -156,13 +246,15 @@ export function SectionHeader({
           const details = response.text
             .split('\n')
             .filter(line => line.trim())
+            .map(line => line.replace(/^[-•*]\s*/, '').trim())
+            .slice(0, 4) // Ensure maximum 4 points
 
-          // Update existing experience instead of creating new ones
+          // Update existing experience with new optimized points
           const updatedExperience = resume.experience?.map((exp, index) => {
             if (index === 0) {
               return {
                 ...exp,
-                details: [...(exp.details || []), ...details]
+                details // Replace existing details with new optimized ones
               }
             }
             return exp
@@ -177,115 +269,212 @@ export function SectionHeader({
         case 'projects': {
           const currentProjects = resume.projects || []
           const currentSkills = resume.skills || {}
-          const allSkills = Object.values(currentSkills).filter(Boolean).join(', ')
           
-          prompt = jobContext +
-            `Generate 3-4 impactful project descriptions using STAR (Situation, Task, Action, Result) or PAR (Problem, Action, Result) method.
+          prompt = `I'm applying for this position. Here's the job posting:
+            ${jobData.jobDescription}
 
-            Current Context:
-            - Resume Type: ${resume.resumeType || 'professional'}
-            - Current Skills: ${allSkills}
-            - Current Projects: ${JSON.stringify(currentProjects, null, 2)}
-            
-            Guidelines:
-            1. Each project should follow this structure:
-               - Situation/Problem: Brief context of the challenge
-               - Task/Action: Technical implementation details
-               - Result: Quantifiable impact and metrics
-            2. Include specific technologies from the job description
-            3. Format each project as: "[Action Verb] [Project Type] using [Technologies], [Problem/Situation], resulting in [Measurable Result]"
-            4. Keep each project description under 25 words
-            5. Each project must be on a new line
-            6. Do NOT use bullet points or numbers`
+            As an HR professional scanning my projects section, you need to see immediate value and impact.
+
+            Analyze my current projects and skills:
+            ${currentProjects.map(proj => `
+            Project: ${proj.name}
+            Technologies: ${proj.technologies}
+            Details: ${proj.details.join('\n')}
+            `).join('\n\n')}
+
+            Technical Arsenal:
+            ${Object.entries(currentSkills)
+              .filter(([_, value]) => value)
+              .map(([key, value]) => `${key}: ${value}`)
+              .join('\n  ')}
+
+            Transform my projects into exactly 3-4 powerful technical achievements with IMPRESSIVE yet REALISTIC metrics:
+
+            Use these realistic metric ranges:
+            1. Performance Improvements:
+               - Load time: 30-50% reduction
+               - Response time: 40-60% faster
+               - Database queries: 25-45% optimization
+               - Code bundle size: 20-40% reduction
+
+            2. User/Business Impact:
+               - User engagement: 15-35% increase
+               - User base: 2K-50K monthly users
+               - Customer satisfaction: 20-40% improvement
+               - Cost savings: $10K-$50K annually
+
+            3. Technical Scale:
+               - API requests: 100K-1M daily
+               - Data processing: 500MB-5TB
+               - Concurrent users: 1K-10K
+               - System uptime: 99.9%
+
+            4. Development Efficiency:
+               - Deployment time: 40-60% reduction
+               - Bug reduction: 30-50% decrease
+               - Development cycle: 25-45% faster
+               - Code reusability: 30-50% improvement
+
+            Requirements:
+            - Generate EXACTLY 3-4 quantified project statements
+            - Use realistic but impressive metrics
+            - Include specific technologies from job posting
+            - Balance technical detail with business impact
+            - Keep each point under 25 words
+            - Must sound achievable and credible
+            - No exaggerated or unrealistic claims
+
+            Project Formula:
+            "[Technical Verb] [Project Type] using [Tech Stack], achieving [Realistic Metric] and [Business Impact]"
+
+            Example Patterns:
+            - "Engineered React microservices architecture reducing load time by 45% and supporting 25K daily users"
+            - "Optimized MongoDB queries cutting response time by 35% while processing 2TB data monthly"
+            - "Implemented CI/CD pipeline decreasing deployment time by 40% and reducing bugs by 35%"
+            - "Developed user authentication system handling 50K monthly users with 99.9% uptime"`
 
           const response = await generateAIContent(prompt)
           if (response.error) throw new Error(response.error)
 
-          // Process the response with improved parsing
           const details = response.text
             .split('\n')
             .filter(line => line.trim())
+            .map(line => line.replace(/^[-•*]\s*/, '').trim())
+            .filter(line => {
+              // Ensure line contains realistic metrics
+              return /\d+%|\d+K|\d+M|\d+\+|\$\d+/.test(line) && 
+                     !line.includes('100%') && // Avoid unrealistic perfect scores
+                     !line.includes('1000%')   // Avoid unrealistic improvements
+            })
+            .slice(0, 4)
 
-          // Update existing projects or create new ones if none exist
-          const updatedProjects = currentProjects.length > 0 
+          // Update existing projects or create new ones
+          const updatedProjects = details.map(detail => {
+            // Split the detail into meaningful parts
+            const matches = detail.match(/^(.*?)\s+using\s+(.*?)(?:,|\s+to\s+|$)(.*)/)
+            if (matches) {
+              const [_, projectAction, technologies, remainingDetail] = matches
+              return {
+                name: projectAction.trim(),
+                technologies: technologies.trim(),
+                date: new Date().getFullYear().toString(),
+                details: [detail] // Quantified detail with realistic metrics
+              }
+            }
+            // Fallback if pattern doesn't match
+            return {
+              name: detail.split(' ').slice(0, 3).join(' '),
+              technologies: currentSkills ? Object.keys(currentSkills)[0] : 'Various technologies',
+              date: new Date().getFullYear().toString(),
+              details: [detail]
+            }
+          })
+
+          // Preserve existing projects that aren't being updated
+          const finalProjects = currentProjects.length > 0
             ? currentProjects.map((proj, index) => {
-                if (index < details.length) {
-                  const [actionPart, ...restParts] = details[index].split(' using ')
+                if (index < updatedProjects.length) {
                   return {
                     ...proj,
-                    name: actionPart.trim(),
-                    technologies: restParts.join(' using ').split(',')[0].trim(),
-                    details: [details[index]]
+                    details: updatedProjects[index].details // Update with realistic quantified details
                   }
                 }
                 return proj
               })
-            : details.map(detail => {
-                const [actionPart, ...restParts] = detail.split(' using ')
-                return {
-                  name: actionPart.trim(),
-                  technologies: restParts.join(' using ').split(',')[0].trim(),
-                  date: new Date().getFullYear().toString(),
-                  details: [detail]
-                }
-              })
+            : updatedProjects
 
-          updateResume('projects', updatedProjects)
+          updateResume('projects', finalProjects)
           break
         }
         case 'skills': {
-          // Create a comprehensive prompt for skills
-          const skillsPrompt = `Based on the following job description and candidate's experience, generate a comprehensive skills section categorized appropriately.
+          const skillsPrompt = `I'm applying for this position. Here's the job posting:
+            ${jobData.jobDescription}
 
-Job Description:
-${jobData.jobDescription}
+            As an HR professional, you need to see my expertise aligned with the role without any preamble.
 
-Professional Experience:
-${resume.experience?.map(exp => `
-- ${exp.title} at ${exp.company} (${exp.date})
-  ${exp.details.join('\n  ')}
-`).join('\n') || 'No experience listed'}
+            Analyze my background:
+            Experience:
+            ${resume.experience?.map(exp => `
+            ${exp.title} at ${exp.company}
+            ${exp.details.join('\n')}
+            `).join('\n\n') || 'No experience listed'}
 
-Projects:
-${resume.projects?.map(proj => `
-- ${proj.name} (${proj.technologies}) - ${proj.date}
-  ${proj.details.join('\n  ')}
-`).join('\n') || 'No projects listed'}
+            Projects:
+            ${resume.projects?.map(proj => `
+            ${proj.name} using ${proj.technologies}
+            ${proj.details.join('\n')}
+            `).join('\n\n') || 'No projects listed'}
 
-Current Skills:
-${resume.skills ? `
-- Languages: ${resume.skills.languages || 'None'}
-- Frameworks: ${resume.skills.frameworks || 'None'}
-- Developer Tools: ${resume.skills.developerTools || 'None'}
-- Libraries: ${resume.skills.libraries || 'None'}
-` : 'No skills listed'}
+            Current Skills:
+            ${resume.skills ? Object.entries(resume.skills).map(([key, value]) => 
+              `${key}: ${value}`).join('\n') : 'No skills listed'}
 
-Please extract and categorize ALL technical skills mentioned above into these categories:
-1. Programming Languages (languages)
-2. Frameworks (frameworks)
-3. Developer Tools (developerTools)
-4. Libraries (libraries)
+            Create a focused skills section that matches exact keywords from the job description.
+            
+            For Technical Roles, categorize as:
+            1. Programming Languages: Core and scripting languages
+            2. Frameworks & Technologies: Development frameworks and platforms
+            3. Developer Tools: IDE, version control, CI/CD
+            4. Databases & Infrastructure: Databases, cloud, servers
+            5. Industry Tools: Domain-specific software
+            6. Technical Methodologies: Development approaches
 
-Format your response EXACTLY as:
-Programming Languages: skill1, skill2, ...
-Frameworks: skill1, skill2, ...
-Developer Tools: skill1, skill2, ...
-Libraries: skill1, skill2, ...
+            For Business/Non-Technical Roles, categorize as:
+            1. Industry Software: Specific tools and platforms
+            2. Business Systems: ERP, CRM, analytics tools
+            3. Data & Analytics: Analysis and reporting tools
+            4. Technical Platforms: Required technical platforms
+            5. Industry Standards: Methodologies and practices
+            6. Domain Tools: Specialized industry software
 
-Important: 
-- Include skills from job description, experience, projects, and current skills
-- Separate skills with commas
-- Do not add any other text or categories`
+            Requirements:
+            - Extract exact keywords from job description
+            - Use industry-standard terms only
+            - Avoid buzzwords and generic terms
+            - Do not include any other text or categories
+            - Do not include any preamble or introduction
+            - Do not use bullet points or markers
+            - Do not use any prefixes like "Results:" or similar markers
+            - Focus on measurable technical skills
+            - List tools by specific names
+            - Include version numbers only if required
+            - Maximum 8 items per category
+            - Sort by relevance to job posting
+            - Remove duplicates
+            - Skip empty categories
+            - No soft skills (these show in experience)
+
+            Format each line as:
+            Category: skill1, skill2, skill3, ...
+
+            ATS Optimization:
+            - Use exact terms from job posting
+            - Include full and abbreviated forms
+            - Match capitalization from job posting
+            - Use standard industry naming
+            - Avoid custom formatting
+            - Skip skill levels or ratings`
 
           const response = await generateAIContent(skillsPrompt)
           if (response.error) throw new Error(response.error)
 
-          const lines = response.text.split('\n').filter(line => line.trim())
-          const updatedSkills: Skills = {
+          const lines = response.text
+            .split('\n')
+            .filter(line => line.trim() && line.includes(':'))
+
+          // Enhanced skills interface to support more categories
+          const updatedSkills: Record<string, string> = {
             languages: '',
             frameworks: '',
             developerTools: '',
-            libraries: ''
+            databases: '',
+            industryTools: '',
+            methodologies: '',
+            businessSystems: '',
+            dataAnalytics: '',
+            technicalPlatforms: '',
+            industryStandards: '',
+            domainTools: ''
           }
 
           lines.forEach(line => {
@@ -293,21 +482,43 @@ Important:
             if (!category || !skills) return
 
             const lowerCategory = category.toLowerCase()
-            const skillsArray = skills.split(',').map(s => s.trim())
+            const skillsArray = skills
+              .split(',')
+              .map(s => s.trim())
+              .filter(Boolean)
+              .filter((skill, index, self) => self.indexOf(skill) === index)
+              .slice(0, 8) // Maximum 8 skills per category
 
-            if (lowerCategory.includes('programming') || lowerCategory.includes('language')) {
-              updatedSkills.languages = skillsArray.join(', ')
-            } else if (lowerCategory.includes('framework')) {
-              updatedSkills.frameworks = skillsArray.join(', ')
-            } else if (lowerCategory.includes('developer') || lowerCategory.includes('tool')) {
-              updatedSkills.developerTools = skillsArray.join(', ')
-            } else if (lowerCategory.includes('librar')) {
-              updatedSkills.libraries = skillsArray.join(', ')
+            // Map categories to our storage structure
+            const categoryMap: Record<string, string> = {
+              'programming languages': 'languages',
+              'frameworks': 'frameworks',
+              'developer tools': 'developerTools',
+              'databases': 'databases',
+              'industry tools': 'industryTools',
+              'technical methodologies': 'methodologies',
+              'business systems': 'businessSystems',
+              'data & analytics': 'dataAnalytics',
+              'technical platforms': 'technicalPlatforms',
+              'industry standards': 'industryStandards',
+              'domain tools': 'domainTools'
+            }
+
+            const mappedCategory = Object.entries(categoryMap)
+              .find(([key]) => lowerCategory.includes(key.toLowerCase()))?.[1]
+
+            if (mappedCategory && skillsArray.length > 0) {
+              updatedSkills[mappedCategory] = skillsArray.join(', ')
             }
           })
 
-          // Ensure all required fields are present with at least empty strings
-          updateResume('skills', updatedSkills)
+          // Remove empty categories
+          const finalSkills = Object.fromEntries(
+            Object.entries(updatedSkills)
+              .filter(([_, value]) => value.trim().length > 0)
+          )
+
+          updateResume('skills', finalSkills)
           break
         }
         default:
@@ -330,41 +541,46 @@ Important:
     }
   }
 
+  // In SectionHeader component, replace the button with a div when inside a template
+  const EditButton = hasAI ? (
+    <div className="flex items-center gap-2">
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button
+              type="button"
+              onClick={handleAIOptimize}
+              disabled={isGenerating}
+              className={cn(
+                "h-8 w-8 p-2 rounded-full hover:bg-gray-100 transition-colors",
+                isGenerating && "animate-pulse"
+              )}
+            >
+              <Wand2 className="h-4 w-4" />
+            </button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>
+              {projectIndex !== undefined 
+                ? `Optimize this project's content` 
+                : `Optimize ${title.toLowerCase()} based on job description`}
+            </p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    </div>
+  ) : null;
+
+  // Remove the edit button at the end
   return (
-    <div className={`flex items-center justify-between mb-4 ${className}`}>
-      <h2 className="text-xl font-semibold">{title}</h2>
-      {hasAI && (
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={handleAIOptimize}
-                disabled={isGenerating}
-                className={cn(
-                  "h-8 w-8",
-                  isGenerating && "animate-pulse"
-                )}
-              >
-                <Wand2 className="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Optimize {title.toLowerCase()} based on job description</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      )}
-      <button
-        onClick={() => {
-          // Handle edit action for the section
-          console.log(`Edit ${section}`);
-        }}
-        className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-        aria-label={`Edit ${section}`}
-      >
-      </button>
+    <div className={cn("flex items-center justify-between", className)}>
+      <div>
+        <h2 className="text-lg font-semibold">{title}</h2>
+        {description && (
+          <p className="text-sm text-muted-foreground">{description}</p>
+        )}
+      </div>
+      {EditButton}
     </div>
   )
 }

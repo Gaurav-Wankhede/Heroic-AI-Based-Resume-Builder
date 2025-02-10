@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Plus, Trash2 } from 'lucide-react'
+import { SectionHeader } from '@/components/section-header'
 
 interface ProjectsSectionProps {
   resume: Resume;
@@ -60,6 +61,17 @@ export function ProjectsSection({ resume, updateResume }: ProjectsSectionProps) 
     <div className="space-y-4">
       {projects.map((project, index) => (
         <div key={index} className="space-y-2 p-4 border rounded-lg">
+          <div className="flex justify-between items-center">
+            <h3 className="text-lg font-medium">{project.name}</h3>
+            <SectionHeader
+              title=""
+              hasAI={true}
+              section="projects"
+              resume={resume}
+              projectIndex={index}
+              className="mb-0"
+            />
+          </div>
           <div className="flex items-start justify-between">
             <div className="flex-1 space-y-4">
               <Input

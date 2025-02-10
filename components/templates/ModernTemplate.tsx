@@ -3,7 +3,7 @@
 import React from 'react';
 import { Resume } from '@/types/resume';
 import { cn } from '@/lib/utils';
-import { Code, Briefcase, GraduationCap, Mail, Phone, Globe, Github } from 'lucide-react';
+import { Code, Briefcase, GraduationCap, Mail, Phone, Globe, Github, Award, ExternalLink } from 'lucide-react';
 
 interface ModernTemplateProps {
   resume: Resume;
@@ -196,6 +196,47 @@ export function ModernTemplate({ resume, className }: ModernTemplateProps) {
                         )}
                       </div>
                     )}
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Certifications */}
+          {resume?.certifications && resume.certifications.length > 0 && (
+            <section className="mb-8">
+              <h2 className="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <span className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                  <Award className="h-4 w-4 text-blue-600" />
+                </span>
+                Certifications
+              </h2>
+              <div className="grid gap-4">
+                {resume.certifications.map((cert, index) => (
+                  <div key={index} className="bg-gray-50 p-4 rounded-lg">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="text-lg font-semibold text-gray-800">{cert.name}</h3>
+                        <p className="text-gray-600">{cert.provider}</p>
+                        {cert.url && (
+                          <a 
+                            href={cert.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:text-blue-800 text-sm mt-1 inline-flex items-center gap-1"
+                          >
+                            <ExternalLink className="h-3 w-3" />
+                            View Certificate
+                          </a>
+                        )}
+                      </div>
+                      <span className="text-gray-500 text-sm">
+                        {new Date(cert.issueDate).toLocaleDateString('en-US', {
+                          month: 'long',
+                          year: 'numeric'
+                        })}
+                      </span>
+                    </div>
                   </div>
                 ))}
               </div>

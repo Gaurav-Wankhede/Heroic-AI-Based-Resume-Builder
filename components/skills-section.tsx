@@ -6,9 +6,10 @@ import { Resume } from '@/types/resume'
 interface SkillsSectionProps {
   resume: Resume;
   updateResume: (field: keyof Resume, value: any) => void;
+  categories: string[];
 }
 
-export function SkillsSection({ resume, updateResume }: SkillsSectionProps) {
+export function SkillsSection({ resume, updateResume, categories }: SkillsSectionProps) {
   const skills = resume.skills || {
     languages: '',
     frameworks: '',

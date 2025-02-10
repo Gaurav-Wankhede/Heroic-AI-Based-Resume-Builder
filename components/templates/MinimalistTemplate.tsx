@@ -191,6 +191,41 @@ export function MinimalistTemplate({ resume, className }: MinimalistTemplateProp
           </div>
         </section>
       )}
+
+      {/* Certifications */}
+      {resume?.certifications && resume.certifications.length > 0 && (
+        <section className="mb-6">
+          <h2 className="text-lg font-medium text-gray-900 mb-3 uppercase tracking-wider">
+            Certifications
+          </h2>
+          <div className="space-y-3">
+            {resume.certifications.map((cert, index) => (
+              <div key={index} className="flex flex-col">
+                <div className="flex justify-between items-baseline">
+                  <h3 className="font-medium text-gray-800">{cert.name}</h3>
+                  <span className="text-gray-500 text-sm">
+                    {new Date(cert.issueDate).toLocaleDateString('en-US', {
+                      month: 'short',
+                      year: 'numeric'
+                    })}
+                  </span>
+                </div>
+                <p className="text-gray-600 text-sm">{cert.provider}</p>
+                {cert.url && (
+                  <a 
+                    href={cert.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-500 hover:text-gray-700 text-sm mt-1"
+                  >
+                    View Certificate →
+                  </a>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }

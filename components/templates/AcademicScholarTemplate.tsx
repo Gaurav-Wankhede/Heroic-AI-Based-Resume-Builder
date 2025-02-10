@@ -23,44 +23,50 @@ export function AcademicScholarTemplate({ resume, className }: AcademicScholarTe
   const education = resume?.education || [];
 
   return (
-    <div className={cn('max-w-4xl mx-auto p-8 bg-white', className)}>
-      {/* Header */}
-      <header className="mb-8 border-b-2 border-indigo-200 pb-4">
-        <h1 className="text-3xl font-serif text-indigo-900 mb-2">{resume?.name}</h1>
-        <div className="flex flex-wrap gap-4 text-indigo-700">
+    <div className={cn('max-w-4xl mx-auto p-6 bg-white', className)}>
+      {/* Header - Academic style */}
+      <header className="mb-6 border-b-2 border-indigo-200 pb-3 text-center">
+        <h1 className="text-2xl font-serif text-indigo-900 mb-2">{resume?.name}</h1>
+        <div className="flex flex-wrap gap-3 text-sm text-indigo-700 justify-center">
           {contact.email && (
-            <a href={`mailto:${contact.email}`} className="hover:text-indigo-500">
+            <a href={`mailto:${contact.email}`} className="hover:text-indigo-500 font-serif">
               {contact.email}
             </a>
           )}
-          {contact.mobile && <span>{contact.mobile}</span>}
+          {contact.mobile && <span className="font-serif">{contact.mobile}</span>}
           {contact.linkedin && (
-            <a href={contact.linkedin} className="hover:text-indigo-500">LinkedIn</a>
+            <a href={contact.linkedin} className="hover:text-indigo-500 font-serif">
+              Academic Profile
+            </a>
           )}
         </div>
       </header>
 
-      {/* Research Interests */}
+      {/* Research Interests - Academic focus */}
       {resume?.summary && (
-        <section className="mb-8">
-          <h2 className="text-xl font-serif font-semibold text-indigo-900 mb-4">Research Interests</h2>
-          <p className="text-gray-700 leading-relaxed">{resume.summary}</p>
+        <section className="mb-6">
+          <h2 className="text-xl font-serif font-semibold text-indigo-900 mb-3 pb-1 border-b border-indigo-200">
+            Research Interests
+          </h2>
+          <p className="text-sm text-gray-700 leading-relaxed text-justify font-serif">
+            {resume.summary}
+          </p>
         </section>
       )}
 
       {/* Education */}
       {education.length > 0 && (
-        <section className="mb-8">
-          <h2 className="text-xl font-serif font-semibold text-indigo-900 mb-4">Education</h2>
+        <section className="mb-6">
+          <h2 className="text-xl font-serif font-semibold text-indigo-900 mb-3">Education</h2>
           {education.map((edu, index) => (
-            <div key={index} className="mb-4 last:mb-0">
+            <div key={index} className="mb-3 last:mb-0">
               <div className="flex justify-between items-baseline">
                 <div>
-                  <h3 className="font-medium text-indigo-800">{edu.school}</h3>
-                  <p className="text-indigo-700">{edu.degree}</p>
-                  <p className="text-indigo-600">{edu.location}</p>
+                  <h3 className="text-base font-medium text-indigo-800">{edu.school}</h3>
+                  <p className="text-sm text-indigo-700">{edu.degree}</p>
+                  <p className="text-xs text-indigo-600">{edu.location}</p>
                 </div>
-                <span className="text-indigo-600">{edu.date}</span>
+                <span className="text-xs text-indigo-600">{edu.date}</span>
               </div>
             </div>
           ))}
@@ -69,21 +75,21 @@ export function AcademicScholarTemplate({ resume, className }: AcademicScholarTe
 
       {/* Research Experience */}
       {experience.length > 0 && (
-        <section className="mb-8">
-          <h2 className="text-xl font-serif font-semibold text-indigo-900 mb-4">Research Experience</h2>
+        <section className="mb-6">
+          <h2 className="text-xl font-serif font-semibold text-indigo-900 mb-3">Research Experience</h2>
           {experience.map((exp, index) => (
-            <div key={index} className="mb-6 last:mb-0">
+            <div key={index} className="mb-4 last:mb-0">
               <div className="flex justify-between items-baseline mb-2">
                 <div>
-                  <h3 className="font-medium text-indigo-800">{exp.title}</h3>
-                  <p className="text-indigo-700">{exp.company}</p>
-                  <p className="text-indigo-600">{exp.location}</p>
+                  <h3 className="text-base font-medium text-indigo-800">{exp.title}</h3>
+                  <p className="text-sm text-indigo-700">{exp.company}</p>
+                  <p className="text-xs text-indigo-600">{exp.location}</p>
                 </div>
-                <span className="text-indigo-600">{exp.date}</span>
+                <span className="text-xs text-indigo-600">{exp.date}</span>
               </div>
-              <ul className="list-disc list-inside space-y-2 text-gray-700">
+              <ul className="list-disc list-inside space-y-1 text-sm text-gray-700">
                 {exp.details.map((detail, idx) => (
-                  <li key={idx} className="text-sm">{detail}</li>
+                  <li key={idx}>{detail}</li>
                 ))}
               </ul>
             </div>
@@ -91,21 +97,23 @@ export function AcademicScholarTemplate({ resume, className }: AcademicScholarTe
         </section>
       )}
 
-      {/* Publications & Projects */}
+      {/* Publications & Projects - Academic emphasis */}
       {projects.length > 0 && (
-        <section className="mb-8">
-          <h2 className="text-xl font-serif font-semibold text-indigo-900 mb-4">Publications & Projects</h2>
+        <section className="mb-6">
+          <h2 className="text-xl font-serif font-semibold text-indigo-900 mb-3 pb-1 border-b border-indigo-200">
+            Publications & Research
+          </h2>
           {projects.map((project, index) => (
-            <div key={index} className="mb-6 last:mb-0 bg-indigo-50 p-6 rounded-lg">
+            <div key={index} className="mb-4 last:mb-0 bg-indigo-50 p-4 rounded border-l-4 border-indigo-200">
               <div className="flex justify-between items-baseline mb-2">
-                <h3 className="text-lg font-medium text-indigo-800">{project.name}</h3>
-                <span className="text-indigo-600">{project.date}</span>
+                <h3 className="text-base font-medium text-indigo-800 italic font-serif">{project.name}</h3>
+                <span className="text-xs text-indigo-600 font-serif">{project.date}</span>
               </div>
-              <p className="text-indigo-600 italic mb-2">{project.technologies}</p>
+              <p className="text-xs text-indigo-600 mb-2 font-serif">{project.technologies}</p>
               
-              {/* Project Links */}
+              {/* Academic links */}
               {(project.deployedLink || project.githubLink || project.presentationLink) && (
-                <div className="flex gap-4 mb-4 text-sm">
+                <div className="flex gap-3 mb-3 text-xs font-serif">
                   {project.deployedLink && (
                     <a 
                       href={project.deployedLink}
@@ -139,9 +147,9 @@ export function AcademicScholarTemplate({ resume, className }: AcademicScholarTe
                 </div>
               )}
 
-              <ul className="list-disc list-inside space-y-2 text-gray-700">
+              <ul className="list-disc list-inside space-y-1 text-sm text-gray-700 text-justify font-serif">
                 {project.details.map((detail, idx) => (
-                  <li key={idx} className="text-sm">{detail}</li>
+                  <li key={idx}>{detail}</li>
                 ))}
               </ul>
             </div>
@@ -150,9 +158,9 @@ export function AcademicScholarTemplate({ resume, className }: AcademicScholarTe
       )}
 
       {/* Technical Skills */}
-      <section className="mb-8">
-        <h2 className="text-xl font-serif font-semibold text-indigo-900 mb-4">Technical Expertise</h2>
-        <div className="grid gap-4">
+      <section>
+        <h2 className="text-xl font-serif font-semibold text-indigo-900 mb-3">Technical Expertise</h2>
+        <div className="grid gap-3">
           {skills.languages && (
             <div>
               <h3 className="font-medium text-indigo-800 mb-1">Research Tools & Languages</h3>
