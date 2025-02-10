@@ -177,8 +177,13 @@ export function ResumeBuilder({ template = 'professional' }: ResumeBuilderProps)
     {
       value: 'certifications',
       label: 'Certifications',
-      content: <CertificationsSection />,
-      description: "Add your professional certifications and credentials."
+      description: 'Add your professional certifications and credentials.',
+      content: (
+        <CertificationsSection 
+          resume={resume} 
+          updateResume={updateResume}
+        />
+      )
     }
   ]
 
