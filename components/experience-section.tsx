@@ -22,7 +22,6 @@ export function ExperienceSection({ resume, updateResume }: ExperienceSectionPro
     const newExperience = {
       title: '',
       company: '',
-      location: '',
       date: '',
       details: ['']
     }

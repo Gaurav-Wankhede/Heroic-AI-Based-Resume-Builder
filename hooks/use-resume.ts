@@ -4,12 +4,11 @@ import { Resume, Education, Experience, Project, Certification } from '../types/
 const initialResume: Resume = {
   name: 'John Developer',
   contact: {
-    email: 'john.developer@email.com',
+    email: 'john@developer.com',
     mobile: '+1 (555) 123-4567',
     linkedin: 'https://linkedin.com/in/johndeveloper',
     github: 'https://github.com/johndeveloper',
-    portfolio: 'https://johndeveloper.dev',
-    location: 'San Francisco, CA'
+    portfolio: 'https://johndeveloper.dev'
   },
   summary: 'Full-stack developer with 4+ years of experience building scalable web applications. Specialized in React, Node.js, and cloud architecture. Proven track record of delivering high-performance solutions that drive business growth. Led teams in developing applications serving 100K+ users.',
   education: [
